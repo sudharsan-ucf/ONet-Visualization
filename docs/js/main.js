@@ -1,10 +1,15 @@
 d3.json('data/hJson.json', function(data){
-  
+
+  console.clear();
+    
   var svgWidth, svgHeight,
-      circleRadius = 10,
-      circleParameters = [],
+      jobCircleRadius = 40,
+      skillCircleRadius = 20,
+      jobCircleParameters = [],
+      skillCircleParameters = [],
       skills = [],
       jobs = ["Animal Trainers", "Bakers"],
+      jobValues = [],
       jobNodes;
 
 
@@ -16,59 +21,87 @@ d3.json('data/hJson.json', function(data){
         .text(key);
     }
   }
+
   
   d3.select('#canvas')
-    .classed("svg-container", true)
-    .style("padding-left", 0)
-    .style("padding-right", 0)
-    .append('svg')
-    .classed("svg-content-responsive", true)
-    .attr("id", "svg-canvas");
+  .classed("svg-container", true)
+  .style("padding-left", 0)
+  .style("padding-right", 0)
+  .append('svg')
+  .classed("svg-content-responsive", true)
+  .attr("id", "svg-canvas");
   
   svgWidth = document.getElementById("canvas").getBoundingClientRect().width;
   svgHeight = document.getElementById("canvas").getBoundingClientRect().height;
   
   d3.select("#svg-canvas")
-    .attr("width", svgWidth)
+  .attr("width", svgWidth)
     .attr("height", svgHeight);
-  
+    
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
       if (jobs.includes(key)){
-        d3.select("svg").append("circle");
+        jobValues.push(data[key]["Code"]);
+        d3.select("svg").append("circle")
+        .classed("job-circle", true);
         for (var skillIndex in data[key]["skill"]) {
           skills.push(data[key]["skill"][skillIndex]);
         }
       }
     }
   }
+  
+  document.getElementById("dropdown-firstjob").value = jobValues[0];
+  document.getElementById("dropdown-secondjob").value = jobValues[1];
 
   skills = [...new Set(skills)];
-
-  circleParameters.push({
-    cx:circleRadius + Math.random()*(svgWidth -2*circleRadius),
-    cy:circleRadius + Math.random()*(svgWidth -2*circleRadius),
-    r:circleRadius});
-  circleParameters.push({
-    cx:circleRadius + Math.random()*(svgWidth -2*circleRadius),
-    cy:circleRadius + Math.random()*(svgWidth -2*circleRadius),
-    r:circleRadius});
-
-  // d3.selectAll("circle")
-  //   .attr("cx", function(circleParameters, i){
-  //     return circleParameters[i].cx;
-  //   })
-  //   .attr("cy", function(circleParameters, i){
-  //     return circleParameters[i].cy;
-  //   })
-  //   .attr("r", function(circleParameters, i){
-  //     return circleParameters[i].r;
-  //   });
-  //   // .append("text");
   
-});
+  jobCircleParameters.push({
+    cx:jobCircleRadius + Math.random()*(svgWidth -2*jobCircleRadius),
+    cy:jobCircleRadius + Math.random()*(svgHeight -2*jobCircleRadius),
+    r:jobCircleRadius});
+  jobCircleParameters.push({
+    cx:jobCircleRadius + Math.random()*(svgWidth -2*jobCircleRadius),
+    cy:jobCircleRadius + Math.random()*(svgHeight -2*jobCircleRadius),
+    r:jobCircleRadius});
+      
+  for (let x = 0; x < skills.length; x++) {
+    d3.select("svg").append("circle")
+      .classed("skill-circle", true);
+    skillCircleParameters.push({
+      cx:skillCircleRadius + Math.random()*(svgWidth -2*skillCircleRadius),
+      cy:skillCircleRadius + Math.random()*(svgHeight -2*skillCircleRadius),
+      r:skillCircleRadius
+    });
+  }
+      
+  d3.selectAll(".job-circle")
+    .data(jobCircleParameters)
+    .attr("cx", function(circleParameter, i){
+      return circleParameter.cx;
+    })
+    .attr("cy", function(circleParameter, i){
+      return circleParameter.cy;
+    })
+    .attr("r", function(circleParameter, i){
+      return circleParameter.r;
+    });
+    
+  d3.selectAll(".skill-circle")
+    .data(skillCircleParameters)
+    .attr("cx", function(circleParameter, i){
+      return circleParameter.cx;
+    })
+    .attr("cy", function(circleParameter, i){
+      return circleParameter.cy;
+    })
+    .attr("r", function(circleParameter, i){
+      return circleParameter.r;
+    });
 
-// console.log(data);
+  });
+  
+  // console.log(data);
 
 
 // //   var w = 800,
