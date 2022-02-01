@@ -121,8 +121,8 @@ d3.json('data/hJson.json', function(data){
   
   node.append("circle")
       .classed("job-circle", true)
-      .attr("cx", function(d){ return d.x; })
-      .attr("cy", function(d){ return d.y; })
+      .attr("cx", function(d){ return 0; return d.x; })
+      .attr("cy", function(d){ return 0; return d.y; })
       .attr("r", function(d, i){ 
         if ( i < 2 ) { return jobCircleRadius; }
         else { return skillCircleRadius; }})
