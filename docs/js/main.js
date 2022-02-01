@@ -1,8 +1,19 @@
 d3.json('data/hJson.json', function(data){
 
+  // Populating the Job options
+  for (var key in data) {
+    if (data.hasOwnProperty(key)) {
+      d3.selectAll(".job-select")
+        .append("option")
+        .attr("value", data[key]["Code"])
+        .text(key);
+    }
+  }
+
   // Debugging Settings
   console.clear();
-  var jobs = ["Animal Trainers", "Bakers"];
+  var testJobs;
+  var colors = d3.scale.category10();
 
   // Plot configurations
   var jobCircleRadius = 40,
@@ -14,17 +25,7 @@ d3.json('data/hJson.json', function(data){
       skills = [],
       jobValues = [],
       nodes = [], links = [];
-
-  // Populating the Job options
-  for (var key in data) {
-    if (data.hasOwnProperty(key)) {
-      d3.selectAll(".job-select")
-        .append("option")
-        .attr("value", data[key]["Code"])
-        .text(key);
-    }
-  }
-
+      
   // Creating the SVG canvas for drawing
   var canvas = d3.select('#canvas')
     .classed("svg-container", true)
@@ -43,15 +44,28 @@ d3.json('data/hJson.json', function(data){
   // Creating the nodes object
   // Adding jobs to the nodes list
   // Extracting the common skills
+
+  var graphData = {
+    "nodes": [],
+    "edges": []
+  };
+  
+  testJobs = ["Animal Trainers", "Bakers"];
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
-      if (jobs.includes(key)){
-        jobValues.push(data[key]["Code"]);
-        nodes.push({
-          name:key,
+      if (testJobs.includes(key)){
+        graphData.nodes.push({
+          name: key,
           cx:jobCircleRadius + Math.random()*(svgWidth -2*jobCircleRadius),
           cy:jobCircleRadius + Math.random()*(svgHeight -2*jobCircleRadius),
           r:jobCircleRadius
+        })
+        jobValues.push(data[key]["Code"]);
+        nodes.push({
+          name:key,
+          // cx:jobCircleRadius + Math.random()*(svgWidth -2*jobCircleRadius),
+          // cy:jobCircleRadius + Math.random()*(svgHeight -2*jobCircleRadius),
+          // r:jobCircleRadius
         });
         for (var skillIndex in data[key]["skill"]) {
           skills.push(data[key]["skill"][skillIndex]);
@@ -71,9 +85,9 @@ d3.json('data/hJson.json', function(data){
   for (var skill in skills) {
     nodes.push({
       name:skills[skill],
-      cx:skillCircleRadius + Math.random()*(svgWidth -2*skillCircleRadius),
-      cy:skillCircleRadius + Math.random()*(svgHeight -2*skillCircleRadius),
-      r:skillCircleRadius
+      // cx:skillCircleRadius + Math.random()*(svgWidth -2*skillCircleRadius),
+      // cy:skillCircleRadius + Math.random()*(svgHeight -2*skillCircleRadius),
+      // r:skillCircleRadius
     });
   }
   for (var i=0; i<skills.length; i++){
@@ -85,71 +99,59 @@ d3.json('data/hJson.json', function(data){
 
   // Creating the force layout
   var force = d3.layout.force()
+                .nodes(nodes)
+                .links([])
                 .gravity(0.1)
-                .charge(-2000)
-                .size([svgWidth,svgHeight]);
+                // .linkDistance([50])
+                .charge([-200])
+                .size([svgWidth,svgHeight])
+                .start();
   
   var link =  canvas.selectAll('line')
-                    .data(links).enter().append('line')
-                    .attr('stroke', 'black')
-                    .attr('strokewidth', '4');
+                    .data(links).enter()
+                    .append('line')
+                    .style('stroke', '#aaa')
+                    .style('stroke-width', '2');
   
   // Creating a group element as nodes
   var node =  canvas.selectAll('circle')  
-                    .data(nodes).enter() 
+                    .data(nodes).enter()
                     .append('g') 
                     .call(force.drag);
   
   node.append("circle")
       .classed("job-circle", true)
-      .attr("cx", function(circleParameter, i){
-        return circleParameter.cx;
-      })
-      .attr("cy", function(circleParameter, i){
-        return circleParameter.cy;
-      })
-      .attr("r", function(circleParameter, i){
-        return circleParameter.r;
-      })
-      .attr('fill', function(circleParameter,i){
-        if ( i < 2 ) {
-          return '#f00';
-        } else {
-          return '#00f';
-        }})
-      .attr('strokewidth', function(circleParameter,i){
-        if ( i < 2 ) {
-          return '4';
-        } else {
-          return '1';
-        }})
-      .attr('stroke', function(circleParameter,i){
-        return 'black';
-      });
+      .attr("cx", function(d){ return d.x; })
+      .attr("cy", function(d){ return d.y; })
+      .attr("r", function(d, i){ 
+        if ( i < 2 ) { return jobCircleRadius; }
+        else { return skillCircleRadius; }})
+      .attr('fill', function(d,i){
+        if ( i < 2 ) { return '#f00'; }
+        else { return colors(i); }})
+      .attr('strokewidth', function(d,i){
+        if ( i < 2 ) { return '4'; }
+        else { return '1'; }})
+      .attr('stroke', function(d,i){ return 'black'; });
   
-  node.append('text')
-      .text(function(d){ return d.name; })
-      .attr('font-family', 'Raleway', 'Helvetica Neue, Helvetica')
-      .attr('fill', function(d, i){ return 'black'; })
-      .attr('text-anchor', function(d, i) { return 'middle'; })
-      .attr('font-size', function(d, i){
-        if (i < 2 ) {
-              return '.6em';
-        } else {
-              return '.5em';    
-        }
-  })
-  
-  force.on('tick', function(e){
+  force.on("tick", function(e){
     node.attr('transform', function(d, i){
-      return 'translate(' + d.cx + ','+ d.cy + ')'
+      return 'translate(' + d.x + ','+ d.y + ')'
     })
-    link.attr('x1', function(d){ return d.source.cx; }) 
-        .attr('y1', function(d){ return d.source.cy; })
-        .attr('x2', function(d){ return d.target.cx; })
-        .attr('y2', function(d){ return d.target.cy; })
+    link.attr('x1', function(d){ return d.source.x; }) 
+        .attr('y1', function(d){ return d.source.y; })
+        .attr('x2', function(d){ return d.target.x; })
+        .attr('y2', function(d){ return d.target.y; })
   });
 
-  force.start();
+  node.append('text')
+    .text(function(d){ return d.name; })
+    .attr('font-family', 'Raleway', 'Helvetica Neue, Helvetica')
+    .attr('fill', function(d, i){ return 'black'; })
+    .attr('text-anchor', function(d, i) { return 'middle'; })
+    .attr('font-size', function(d, i){
+      if (i < 2 ) { return '.6em'; } else { return '.5em'; }})
+
+  // force.start();
 
 });

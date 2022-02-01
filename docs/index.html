@@ -23,10 +23,10 @@
       <div class="dropdown">
         <!-- <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">First Occupation</button> -->
         <!-- <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Second Occupation</button> -->
-        <select id="dropdown-firstjob" class="job-select" aria-label="First job selector">
+        <select id="dropdown-firstjob" class="job-select" onchange="job1Changed()" aria-label="First job selector">
           <option selected>Select first job</option>
         </select>
-        <select id="dropdown-secondjob" class="job-select" aria-label="Second job selector">
+        <select id="dropdown-secondjob" class="job-select" onchange="job2Changed()" aria-label="Second job selector">
           <option selected>Select second job</option>
         </select>
       </div>
