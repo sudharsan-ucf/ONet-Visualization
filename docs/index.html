@@ -18,19 +18,17 @@
     <link href="css/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container-fluid">
+    <div class="container">
       <h1>ONET - Skill Visualization</h1>
-      <div class="dropdown">
-        <!-- <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">First Occupation</button> -->
-        <!-- <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Second Occupation</button> -->
-        <select id="dropdown-firstjob" class="job-select" onchange="job1Changed()" aria-label="First job selector">
-          <option selected>Select first job</option>
-        </select>
-        <select id="dropdown-secondjob" class="job-select" onchange="job2Changed()" aria-label="Second job selector">
-          <option selected>Select second job</option>
-        </select>
+      <div class="row justify-content-around">
+        <div class="col-md job-dropdowns">
+          <select id="dropdown-firstjob" class="job-select" onchange="job1Changed()" aria-label="First job selector"></select>
+        </div>
+        <div class="col-md job-dropdowns">
+          <select id="dropdown-secondjob" class="job-select" onchange="job2Changed()" aria-label="Second job selector"></select>
+        </div>
       </div>
-      <div id="canvas" class="container"></div>
+      <div class="row" id="canvas"></div>
     </div>
 
     <script src="js/libraries/jquery/jquery.min.js"></script>

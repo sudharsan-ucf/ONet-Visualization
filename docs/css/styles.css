@@ -1,23 +1,26 @@
 @import url(https://fonts.googleapis.com/css?family=Raleway:400);
 
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
+
+.job-select {
+  width: 100%;
+}
+
+.container{
+  height: 600px;
+}
+
+#canvas {
+  height: calc(100% - (48px + 8px + 27px + 12px));
+  padding: 12px;
 }
   
-#canvas {
+#svg-canvas {
   display: block;
-  position: absolute;
-  height: 75%;
-  width: 75%;
+  margin: 1px;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
   border-color: black;
   border-style: solid;
   border-width: thin;
-  /* overflow: hidden; */
-}
-
-.dropdown-menu {
-  max-height: 280px;
-  overflow-y: auto;
 }

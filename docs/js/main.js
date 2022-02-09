@@ -18,7 +18,6 @@ d3.json('data/hJson.json', function(data){
   // Plot configurations
   var jobCircleRadius = 40,
       skillCircleRadius = 20;
-    
   var svgWidth, svgHeight,
       jobCircleParameters = [],
       skillCircleParameters = [],
@@ -29,16 +28,14 @@ d3.json('data/hJson.json', function(data){
   // Creating the SVG canvas for drawing
   var canvas = d3.select('#canvas')
     .classed("svg-container", true)
-    .style("padding-left", 0)
-    .style("padding-right", 0)
     .append('svg')
     .classed("svg-content-responsive", true)
     .attr("id", "svg-canvas");
-  svgWidth = document.getElementById("canvas").getBoundingClientRect().width;
-  svgHeight = document.getElementById("canvas").getBoundingClientRect().height;
-  d3.select("#svg-canvas")
-    .attr("width", svgWidth)
-    .attr("height", svgHeight);
+  svgWidth = document.getElementById("svg-canvas").getBoundingClientRect().width;
+  svgHeight = document.getElementById("svg-canvas").getBoundingClientRect().height;
+  // d3.select("#svg-canvas")
+  //   .attr("width", svgWidth)
+  //   .attr("height", svgHeight);
     
   
   // Creating the nodes object
