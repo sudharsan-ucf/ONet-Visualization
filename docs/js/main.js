@@ -4,6 +4,8 @@
 // Load the data into browser memory
 d3.json('data/hJson.json', function(data){
   localStorage.setItem('data', JSON.stringify(data));
+  var skillsData = {}
+  localStorage.setItem('skillsData', JSON.stringify(skillsData));
 });
 
 
@@ -13,6 +15,7 @@ console.clear();
 
 // Local variables
 var data = JSON.parse(localStorage.getItem('data'));
+var skillsData = JSON.parse(localStorage.getItem('skillsData'));
 var colors = d3.scale.category10();
 var testJobs;
 
@@ -37,6 +40,7 @@ var svgWidth, svgHeight,
     skills = [],
     jobValues = [],
     nodes = [], links = [];
+
     
 // Creating the SVG canvas for drawing
 var canvas = d3.select('#canvas')
@@ -46,9 +50,6 @@ var canvas = d3.select('#canvas')
   .attr("id", "svg-canvas");
 svgWidth = document.getElementById("svg-canvas").getBoundingClientRect().width;
 svgHeight = document.getElementById("svg-canvas").getBoundingClientRect().height;
-// d3.select("#svg-canvas")
-//   .attr("width", svgWidth)
-//   .attr("height", svgHeight);
   
 
 // Creating the nodes object
@@ -164,15 +165,6 @@ node.append('text')
 
 // force.start();
 
-
-
-
-function callFunction(){
-  var localCounter = JSON.parse(localStorage.getItem('counter'));
-  localCounter.count += 1;
-  console.log('Counter value is ' + localCounter.count);
-  localStorage.setItem('counter', JSON.stringify(localCounter));
-}
 
 function job1Changed(){
   var localCounter = JSON.parse(localStorage.getItem('counter'));
