@@ -43,13 +43,13 @@ var svgWidth, svgHeight,
 
     
 // Creating the SVG canvas for drawing
-var canvas = d3.select('#canvas')
+var canvas = d3.select('#canvas-force')
   .classed("svg-container", true)
   .append('svg')
   .classed("svg-content-responsive", true)
-  .attr("id", "svg-canvas");
-svgWidth = document.getElementById("svg-canvas").getBoundingClientRect().width;
-svgHeight = document.getElementById("svg-canvas").getBoundingClientRect().height;
+  .attr("id", "svg-canvas-force");
+svgWidth = document.getElementById("svg-canvas-force").getBoundingClientRect().width;
+svgHeight = document.getElementById("svg-canvas-force").getBoundingClientRect().height;
   
 
 // Creating the nodes object
@@ -173,3 +173,54 @@ function job1Changed(){
   localStorage.setItem('counter', JSON.stringify(localCounter));
 }
 
+
+
+// Radar - BEGIN
+var data = [
+  {
+    className: 'germany', // optional can be used for styling
+    axes: [
+      {axis: "strength", value: 13}, 
+      {axis: "intelligence", value: 6}, 
+      {axis: "charisma", value: 5},  
+      {axis: "dexterity", value: 9},  
+      {axis: "luck", value: 2}
+    ]
+  },
+  {
+    className: 'argentina',
+    axes: [
+      {axis: "strength", value: 6}, 
+      {axis: "intelligence", value: 7}, 
+      {axis: "charisma", value: 10},  
+      {axis: "dexterity", value: 13},  
+      {axis: "luck", value: 9}
+    ]
+  }
+];
+function randomDataset() {
+  return data.map(function(d) {
+    return {
+      className: d.className,
+      axes: d.axes.map(function(axes) {
+        return {axis: axes.axis, value: Math.ceil(Math.random() * 10)};
+      })
+    };
+  });
+}
+RadarChart.defaultConfig.radius = 5;
+RadarChart.defaultConfig.w = 400;
+RadarChart.defaultConfig.h = 400;
+var chart = RadarChart.chart();
+var svgRadar = d3.select('#canvas-radar')
+            .classed("svg-container", true)
+            .append('svg')
+            .classed("svg-content-responsive", true)
+            .attr("id", "svg-canvas-radar")
+            .attr('width', 850)
+            .attr('height', 500);
+svgRadar.append('g')
+        .classed("single", true)
+        .datum(data)
+        .call(chart);
+// Radar - END
