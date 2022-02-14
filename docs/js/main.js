@@ -23,7 +23,7 @@ var colors = d3.scale.category10();
 // Populating the Job options
 for (var key in data) {
   if (data.hasOwnProperty(key)) {
-    if (data[key]["Occupation"] === null) {}
+    if (data[key]["skill"] == null) {}
     else {
       d3.selectAll(".job-select")
         .append("option")
@@ -33,11 +33,6 @@ for (var key in data) {
   }
 }
 
-
-// Radar configuration
-RadarChart.defaultConfig.radius = 5;
-RadarChart.defaultConfig.w = 400;
-RadarChart.defaultConfig.h = 400;
 
 // Plot configurations
 var jobCircleRadius = 40,
@@ -61,7 +56,6 @@ svgWidthForce = document.getElementById("svg-canvas-force").getBoundingClientRec
 svgHeightForce = document.getElementById("svg-canvas-force").getBoundingClientRect().height;
 
 // Creating the SVG canvas for force drawing
-var chart = RadarChart.chart();
 var svgRadar = d3.select('#canvas-radar')
                 .classed("svg-container", true)
                 .append('svg')
@@ -185,6 +179,13 @@ function jobChanged(){
   }
 
   // Draw the radar
+  var chart = RadarChart.chart();
+  
+  // Radar configuration
+  RadarChart.defaultConfig.radius = 5;
+  RadarChart.defaultConfig.w = 400;
+  RadarChart.defaultConfig.h = 400;
+
   svgRadar.append('g')
           .datum(skillsData)
           .call(chart);
@@ -199,23 +200,3 @@ job1 = document.getElementById("dropdown-firstjob").value;
 job2 = document.getElementById("dropdown-secondjob").value;
 jobChanged();
 
-
-// // Radar - BEGIN
-// svgRadar.append('g')
-//         .datum(skillsData)
-//         .call(chart);
-// // Radar - END
-
-
-// className: 'germany', // optional can be used for styling
-  //     axes: [
-  //       {axis: "strength", value: 13},
-  //       {axis: "intelligence", value: 6},
-  //       {axis: "charisma", value: 5},
-  //       {axis: "dexterity", value: 9},
-  //       {axis: "dexterity", value: 9},
-  //       {axis: "dexterity", value: 9},
-  //       {axis: "dexterity", value: 9},
-  //       {axis: "dexterity", value: 9},
-  //       {axis: "luck", value: 2}
-  //     ]
