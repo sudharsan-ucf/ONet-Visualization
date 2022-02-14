@@ -4,37 +4,9 @@
 // Load the data into browser memory
 d3.json('data/hJson.json', function(data){
   localStorage.setItem('data', JSON.stringify(data));
-  var skillsData = [
-    {
-      className: 'germany', // optional can be used for styling
-      axes: [
-        {axis: "strength", value: 13},
-        {axis: "intelligence", value: 6},
-        {axis: "charisma", value: 5},
-        {axis: "dexterity", value: 9},
-        {axis: "dexterity", value: 9},
-        {axis: "dexterity", value: 9},
-        {axis: "dexterity", value: 9},
-        {axis: "dexterity", value: 9},
-        {axis: "luck", value: 2}
-      ]
-    },
-    {
-      className: 'argentina',
-      axes: [
-        {axis: "strength", value: 6}, 
-        {axis: "intelligence", value: 7}, 
-        {axis: "charisma", value: 10},  
-        {axis: "dexterity", value: 13},  
-        {axis: "dexterity", value: 9},
-        {axis: "dexterity", value: 9},
-        {axis: "dexterity", value: 9},
-        {axis: "dexterity", value: 9},
-        {axis: "luck", value: 9}
-      ]
-    }
-  ];
-  localStorage.setItem('skillsData', JSON.stringify(skillsData));
+});
+d3.json('data/skills.json', function(data){
+  localStorage.setItem('skills', JSON.stringify(data));
 });
 
 
@@ -44,9 +16,9 @@ console.clear();
 
 // Local variables
 var data = JSON.parse(localStorage.getItem('data'));
-var skillsData = JSON.parse(localStorage.getItem('skillsData'));
+var skillsDB = JSON.parse(localStorage.getItem('skills'));
 var colors = d3.scale.category10();
-var testJobs;
+
 
 // Populating the Job options
 for (var key in data) {
@@ -74,7 +46,7 @@ var svgWidthForce, svgHeightForce,
     svgWidthRadar, svgHeightRadar,
     jobCircleParameters = [],
     skillCircleParameters = [],
-    skills = [],
+    skills, skillsData = [],
     jobValues = [],
     nodes = [], links = [];
 
@@ -148,18 +120,6 @@ function jobChanged(){
       source:graphData.nodes[2+i], target:graphData.nodes[1] });
   }
   
-  console.log(graphData.nodes);
-
-  // for (var key in data) {
-  //   if (data.hasOwnProperty(key)) {
-  //     if (testJobs.includes(key)){
-  //       for (var skillIndex in data[key]["skill"]) {
-  //         skills.push(data[key]["skill"][skillIndex]);
-  //       }
-  //     }
-  //   }
-  // }
-
   // Creating the force layout
   var d3force = d3.layout.force()
                 .nodes(graphData.nodes)
@@ -214,7 +174,20 @@ function jobChanged(){
     .attr('text-anchor', function(d, i) { return 'middle'; })
     .attr('font-size', function(d, i){
       if (i < 2 ) { return '.6em'; } else { return '.5em'; }})
+  
+  
+  skillsData.push({ className : data[job1]["Occupation"], axes : [] });
+  skillsData.push({ className : data[job2]["Occupation"], axes : [] });
 
+  for (var skill in skills) {
+    skillsData[0].axes.push({ axis : skills[skill], value : skillsDB[job1][skills[skill]]['IM']});
+    skillsData[1].axes.push({ axis : skills[skill], value : skillsDB[job2][skills[skill]]['IM']});
+  }
+
+  // Draw the radar
+  svgRadar.append('g')
+          .datum(skillsData)
+          .call(chart);
 
 } // End of jobchanged()
 
@@ -226,11 +199,23 @@ job1 = document.getElementById("dropdown-firstjob").value;
 job2 = document.getElementById("dropdown-secondjob").value;
 jobChanged();
 
-// Radar - BEGIN
-svgRadar.append('g')
-        .classed("single", true)
-        .datum(skillsData)
-        .call(chart);
-// Radar - END
+
+// // Radar - BEGIN
+// svgRadar.append('g')
+//         .datum(skillsData)
+//         .call(chart);
+// // Radar - END
 
 
+// className: 'germany', // optional can be used for styling
+  //     axes: [
+  //       {axis: "strength", value: 13},
+  //       {axis: "intelligence", value: 6},
+  //       {axis: "charisma", value: 5},
+  //       {axis: "dexterity", value: 9},
+  //       {axis: "dexterity", value: 9},
+  //       {axis: "dexterity", value: 9},
+  //       {axis: "dexterity", value: 9},
+  //       {axis: "dexterity", value: 9},
+  //       {axis: "luck", value: 2}
+  //     ]
