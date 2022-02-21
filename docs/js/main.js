@@ -37,13 +37,7 @@ for (var key in data) {
 // Plot configurations
 var jobCircleRadius = 40,
     skillCircleRadius = 20;
-var svgWidthForce, svgHeightForce,
-    svgWidthRadar, svgHeightRadar,
-    jobCircleParameters = [],
-    skillCircleParameters = [],
-    skills, skillsData = [],
-    jobValues = [],
-    nodes = [], links = [];
+var svgWidthForce, svgHeightForce;
 
     
 // Creating the SVG canvas for force drawing
@@ -79,8 +73,8 @@ function jobChanged(){
     console.log('Job 1 ' + job1 + ' | Job 2 ' + job2);
   }
 
-  d3.selectAll(".svg-content-responsive")
-    .selectAll("*").remove();
+  d3.selectAll("#svg-canvas-force").selectAll("*").remove();
+  d3.selectAll("#svg-canvas-radar").selectAll("*").remove();
 
   var graphData = {
     "nodes": [],
@@ -97,7 +91,7 @@ function jobChanged(){
   })
 
   // Removing duplicates from skills
-  skills = [...new Set([...data[job1]["skill"], ...data[job2]["skill"]])];
+  var skills = [...new Set([...data[job1]["skill"], ...data[job2]["skill"]])];
   
   // Adding skills to the nodes list
   for (var skill in skills) {
@@ -167,9 +161,11 @@ function jobChanged(){
     .attr('fill', function(d, i){ return 'black'; })
     .attr('text-anchor', function(d, i) { return 'middle'; })
     .attr('font-size', function(d, i){
-      if (i < 2 ) { return '.6em'; } else { return '.5em'; }})
+      if (i < 2 ) { return '.6em'; } else { return '.5em'; }});
   
-  
+
+  // Draw the radar
+  var skillsData = [];
   skillsData.push({ className : data[job1]["Occupation"], axes : [] });
   skillsData.push({ className : data[job2]["Occupation"], axes : [] });
 
@@ -178,7 +174,6 @@ function jobChanged(){
     skillsData[1].axes.push({ axis : skills[skill], value : skillsDB[job2][skills[skill]]['IM']});
   }
 
-  // Draw the radar
   var chart = RadarChart.chart();
   
   // Radar configuration
@@ -186,9 +181,9 @@ function jobChanged(){
   RadarChart.defaultConfig.w = 400;
   RadarChart.defaultConfig.h = 400;
 
-  svgRadar.append('g')
-          .datum(skillsData)
-          .call(chart);
+  var radarPlot = svgRadar.selectAll('g').data([skillsData]).enter().append('g');
+  radarPlot.attr('transform', function(d, i) { return 'translate(50,40)'; });
+  radarPlot.call(chart);
 
 } // End of jobchanged()
 
