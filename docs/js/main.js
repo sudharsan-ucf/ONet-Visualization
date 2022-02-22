@@ -182,7 +182,7 @@ function jobChanged(){
   RadarChart.defaultConfig.h = 400;
 
   var radarPlot = svgRadar.selectAll('g').data([skillsData]).enter().append('g');
-  radarPlot.attr('transform', function(d, i) { return 'translate(50,40)'; });
+  radarPlot.attr('transform', function(d, i) { return 'translate(150,40)'; });
   radarPlot.call(chart);
 
 } // End of jobchanged()

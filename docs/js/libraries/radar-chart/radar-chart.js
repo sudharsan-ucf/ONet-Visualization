@@ -115,11 +115,11 @@ var RadarChart = {
                 var p = getHorizontalPosition(i, 0.5);
 
                 return 'legend ' +
-                  ((p < 0.4) ? 'left' : ((p > 0.6) ? 'right' : 'middle'));
+                  ((p < 0.49) ? 'left' : ((p > 0.51) ? 'right' : 'middle'));
               })
               .attr('dy', function(d, i) {
                 var p = getVerticalPosition(i, 0.5);
-                return ((p < 0.1) ? '1em' : ((p > 0.9) ? '0' : '0.5em'));
+                return ((p < 0.001) ? '-0.2em' : ((p > 0.995) ? '1.2em' : '0.5em'));
               })
               .text(function(d) { return d; })
               .attr('x', function(d, i){ return getHorizontalPosition(i, cfg.w / 2, cfg.factorLegend); })
