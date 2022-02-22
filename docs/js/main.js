@@ -19,6 +19,11 @@ var data = JSON.parse(localStorage.getItem('data'));
 var skillsDB = JSON.parse(localStorage.getItem('skills'));
 var colors = d3.scale.category10();
 
+// Populating the Cluster options
+d3.selectAll(".cluster-select").append("option").attr("value","0").text("Hospitality & Tourism");
+
+// Populating the Pathway options
+d3.selectAll(".pathway-select").append("option").attr("value","0").text("Lodging");
 
 // Populating the Job options
 for (var key in data) {

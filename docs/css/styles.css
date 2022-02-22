@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Raleway:400);
 
 
-.job-select {
+.cluster-select, .pathway-select, .job-select {
   width: 100%;
 }
 
