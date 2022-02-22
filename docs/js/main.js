@@ -45,17 +45,27 @@ var canvasForce = d3.select('#canvas-force')
   .classed("svg-container", true)
   .append('svg')
   .classed("svg-content-responsive", true)
-  .attr("id", "svg-canvas-force");
+  .attr("id", "svg-canvas-force")
+  .attr("height", "600");
 svgWidthForce = document.getElementById("svg-canvas-force").getBoundingClientRect().width;
-svgHeightForce = document.getElementById("svg-canvas-force").getBoundingClientRect().height;
+svgHeightForce = 600;
 
 // Creating the SVG canvas for force drawing
-var svgRadar = d3.select('#canvas-radar')
+var svgRadarIM = d3.select('#canvas-radarIM')
                 .classed("svg-container", true)
                 .append('svg')
                 .classed("svg-content-responsive", true)
-                .attr("id", "svg-canvas-radar")
-                .attr('width', 850)
+                .classed("col", true)
+                .attr("id", "svg-canvas-radar1")
+                .attr('width', 850/2)
+                .attr('height', 500);
+var svgRadarLV = d3.select('#canvas-radarLV')
+                .classed("svg-container", true)
+                .append('svg')
+                .classed("svg-content-responsive", true)
+                .classed("col", true)
+                .attr("id", "svg-canvas-radar2")
+                .attr('width', 850/2)
                 .attr('height', 500);
 
 
@@ -74,7 +84,8 @@ function jobChanged(){
   }
 
   d3.selectAll("#svg-canvas-force").selectAll("*").remove();
-  d3.selectAll("#svg-canvas-radar").selectAll("*").remove();
+  d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
+  d3.selectAll("#svg-canvas-radar2").selectAll("*").remove();
 
   var graphData = {
     "nodes": [],
@@ -165,13 +176,20 @@ function jobChanged(){
   
 
   // Draw the radar
-  var skillsData = [];
-  skillsData.push({ className : data[job1]["Occupation"], axes : [] });
-  skillsData.push({ className : data[job2]["Occupation"], axes : [] });
+  var skillsDataIM = [];
+  var skillsDataLV = [];
+  skillsDataIM.push({ className : data[job1]["Occupation"], axes : [] });
+  skillsDataIM.push({ className : data[job2]["Occupation"], axes : [] });
+  skillsDataLV.push({ className : data[job1]["Occupation"], axes : [] });
+  skillsDataLV.push({ className : data[job2]["Occupation"], axes : [] });
 
   for (var skill in skills) {
-    skillsData[0].axes.push({ axis : skills[skill], value : skillsDB[job1][skills[skill]]['IM']});
-    skillsData[1].axes.push({ axis : skills[skill], value : skillsDB[job2][skills[skill]]['IM']});
+    skillsDataIM[0].axes.push({ axis : skills[skill], value : skillsDB[job1][skills[skill]]['IM']});
+    skillsDataIM[1].axes.push({ axis : skills[skill], value : skillsDB[job2][skills[skill]]['IM']});
+  }
+  for (var skill in skills) {
+    skillsDataLV[0].axes.push({ axis : skills[skill], value : skillsDB[job1][skills[skill]]['LV']});
+    skillsDataLV[1].axes.push({ axis : skills[skill], value : skillsDB[job2][skills[skill]]['LV']});
   }
 
   var chart = RadarChart.chart();
@@ -181,9 +199,27 @@ function jobChanged(){
   RadarChart.defaultConfig.w = 400;
   RadarChart.defaultConfig.h = 400;
 
-  var radarPlot = svgRadar.selectAll('g').data([skillsData]).enter().append('g');
-  radarPlot.attr('transform', function(d, i) { return 'translate(150,40)'; });
-  radarPlot.call(chart);
+  RadarChart.defaultConfig.maxValue = 5;
+  RadarChart.defaultConfig.levels = 5;
+  var radarPlotIM = svgRadarIM.selectAll('g').data([skillsDataIM]).enter().append('g');
+  radarPlotIM.attr('transform', function(d, i) { return 'translate(100,40)'; });
+  radarPlotIM.call(chart);
+
+  RadarChart.defaultConfig.maxValue = 7;
+  RadarChart.defaultConfig.levels = 7;
+  var radarPlotLV = svgRadarLV.selectAll('g').data([skillsDataLV]).enter().append('g');
+  radarPlotLV.attr('transform', function(d, i) { return 'translate(100,40)'; });
+  radarPlotLV.call(chart);
+
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "basicSkills").attr('style', "fill:#668000;fill-rule:evenodd").attr('d', "M 206.12424,116.55685 A 100,100 0 0 1 175.63319,197.80043 100,100 0 0 1 93.103497,224.616 l 13.423333,-99.09497 z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "crossSkills").attr('style', "fill:#88aa00;fill-rule:evenodd").attr('d', "M 93.104,224.61607 A 100,100 0 0 1 6.7057983,119.54097 100,100 0 0 1 105.03068,25.53222 a 100,100 0 0 1 101.09358,91.0248 l -99.59743,8.96401 z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-resource").attr('style', "fill:#e9afaf;fill-rule:evenodd").attr('d', "m 161.96856,67.724629 a 80.227188,79.961998 0 0 1 24.46248,50.628601 l -79.90421,7.1678 z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-systems").attr('style', "fill:#de8787;fill-rule:evenodd").attr('d', "m 124.37887,47.563799 a 80.227188,79.961998 0 0 1 37.58999,20.161117 l -55.44203,57.796114 z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-technical").attr('style', "fill:#d35f5f;fill-rule:evenodd").attr('d', "M 27.589,139.79919 A 80.227188,79.961998 0 0 1 51.084653,67.725064 80.227188,79.961998 0 0 1 124.379,47.563829 l -17.85217,77.957201 z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-complex").attr('style', "fill:#c83737;fill-rule:evenodd").attr('d', "M 31.41513,153.6171 A 80.227188,79.961998 0 0 1 27.589,139.79918 l 78.93783,-14.27815 z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-social").attr('style', "fill:#a02c2c;fill-rule:evenodd").attr('d', "M 95.758074,204.7594 A 80.227188,79.961998 0 0 1 31.415327,153.61762 l 75.111503,-28.09659 z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "basic-process").attr('style', "fill:#782121;fill-rule:evenodd").attr('d', "M 150.72425,192.25484 A 80.227188,79.961998 0 0 1 95.757668,204.75935 L 106.52683,125.52103 Z");
+  // svgRadar.select('g.radar-chart').append('path').attr('id', "basic-content").attr('style', "fill:#501616;fill-rule:evenodd").attr('d', "m 186.43103,118.35309 a 80.227188,79.961998 0 0 1 -35.70728,73.90208 l -44.19692,-66.73414 z");
 
 } // End of jobchanged()
 

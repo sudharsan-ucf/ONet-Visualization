@@ -28,8 +28,19 @@
           <select id="dropdown-secondjob" class="job-select" onchange="jobChanged()" aria-label="Second job selector"></select>
         </div>
       </div>
-      <div class="row" id="canvas-radar"></div>
-      <div class="row" id="canvas-force"></div>
+      <div class="row" id="canvas-radar">
+        <div class="col" id="canvas-radarIM">
+          <h2 class="text-center">Importance (1-5)</h2>
+        </div>
+        <div class="col" id="canvas-radarLV">
+          <h2 class="text-center">Level (0-7)</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col" id="canvas-force">
+          <h2 class="text-center">Skill Graph</h2>
+        </div>
+      </div>
     </div>
 
     <script src="js/libraries/jquery/jquery.min.js"></script>
