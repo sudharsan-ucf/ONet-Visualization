@@ -9,6 +9,19 @@ d3.json('data/skills.json', function(data){
   localStorage.setItem('skills', JSON.stringify(data));
 });
 
+d3.json('data/clusterData.json', function(data){
+  localStorage.setItem('clusterDB', JSON.stringify(data));
+});
+d3.json('data/pathwaysData.json', function(data){
+  localStorage.setItem('pathwaysDB', JSON.stringify(data));
+});
+d3.json('data/occupationData.json', function(data){
+  localStorage.setItem('occupationDB', JSON.stringify(data));
+});
+d3.json('data/skillsData.json', function(data){
+  localStorage.setItem('skillsDB', JSON.stringify(data));
+});
+
 
 // Debugging Settings
 console.clear();
@@ -16,26 +29,94 @@ console.clear();
 
 // Local variables
 var data = JSON.parse(localStorage.getItem('data'));
-var skillsDB = JSON.parse(localStorage.getItem('skills'));
+var skillsDB_Old = JSON.parse(localStorage.getItem('skills'));
+var clusterDB = JSON.parse(localStorage.getItem('clusterDB'));
+var pathwaysDB = JSON.parse(localStorage.getItem('pathwaysDB'));
+var occupationDB = JSON.parse(localStorage.getItem('occupationDB'));
+var skillsDB = JSON.parse(localStorage.getItem('skillsDB'));
 var colors = d3.scale.category10();
 
-// Populating the Cluster options
-d3.selectAll(".cluster-select").append("option").attr("value","0").text("Hospitality & Tourism");
 
-// Populating the Pathway options
-d3.selectAll(".pathway-select").append("option").attr("value","0").text("Lodging");
+function randomKey(dataBase) {
+  var tmpKeys = Object.keys(dataBase);
+  return tmpKeys[Math.floor(Math.random() * tmpKeys.length)];
+}
 
-// Populating the Job options
-for (var key in data) {
-  if (data.hasOwnProperty(key)) {
-    if (data[key]["skill"] == null) {}
-    else {
-      d3.selectAll(".job-select")
+function loadClusters() {
+  for (var key in clusterDB) {
+    d3.selectAll(".cluster-select")
+      .append("option")
+      .attr("value",key)
+      .text(clusterDB[key].name);
+  }
+}
+
+function selectRandomClusters() {
+  document.getElementById("dropdown-firstcluster").value = randomKey(clusterDB);
+  document.getElementById("dropdown-secondcluster").value = randomKey(clusterDB);
+}
+
+function clusterChanged() {
+
+  var clusterID1 = document.getElementById("dropdown-firstcluster").value;
+  var clusterID2 = document.getElementById("dropdown-secondcluster").value;
+  
+  d3.selectAll("#svg-canvas-force").selectAll("*").remove();
+  d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
+  d3.selectAll("#svg-canvas-radar2").selectAll("*").remove();
+  d3.select("#dropdown-firstpathway").selectAll("option").remove();
+  d3.select("#dropdown-secondpathway").selectAll("option").remove();
+  
+  for (var key in clusterDB[clusterID1].pathways) {
+    var pathwayID = clusterDB[clusterID1].pathways[key]
+    var pathwayName = pathwaysDB[pathwayID].name
+    d3.select("#dropdown-firstpathway")
+      .append("option")
+      .attr("value",pathwayID)
+      .text(pathwayName);
+  }
+
+  for (var key in clusterDB[clusterID2].pathways) {
+    var pathwayID = clusterDB[clusterID2].pathways[key]
+    var pathwayName = pathwaysDB[pathwayID].name
+    d3.select("#dropdown-secondpathway")
+      .append("option")
+      .attr("value",pathwayID)
+      .text(pathwayName);
+  }
+  pathwaysChanged();
+}
+
+function pathwaysChanged() {
+
+  var pathwayID1 = document.getElementById("dropdown-firstpathway").value;
+  var pathwayID2 = document.getElementById("dropdown-secondpathway").value;
+
+  d3.select("#dropdown-firstjob").selectAll("option").remove();
+  d3.select("#dropdown-secondjob").selectAll("option").remove();
+
+  for (var key in pathwaysDB[pathwayID1].jobs) {
+    var jobID = pathwaysDB[pathwayID1].jobs[key]
+    var jobName = occupationDB[jobID].name
+    if (Object.keys(occupationDB[jobID]).length > 1) {
+      d3.select("#dropdown-firstjob")
         .append("option")
-        .attr("value", key)
-        .text(data[key]["Occupation"]);
+        .attr("value",jobID)
+        .text(jobName);
     }
   }
+
+  for (var key in pathwaysDB[pathwayID2].jobs) {
+    var jobID = pathwaysDB[pathwayID2].jobs[key]
+    var jobName = occupationDB[jobID].name
+    if (Object.keys(occupationDB[jobID]).length > 1) {
+      d3.select("#dropdown-secondjob")
+        .append("option")
+        .attr("value",jobID)
+        .text(jobName);
+    }
+  }
+  jobChanged();
 }
 
 
@@ -79,10 +160,8 @@ function jobChanged(){
   var job1 = document.getElementById("dropdown-firstjob").value;
   var job2 = document.getElementById("dropdown-secondjob").value;
   if (job1 == "") {
-    console.log('Job 1 Null' + ' | Job 2 ' + job2);
     return;
   } else if (job2 == "") {
-    console.log('Job 1 ' + job1 + ' | Job 2 Null');
     return;
   } else {
     console.log('Job 1 ' + job1 + ' | Job 2 ' + job2);
@@ -99,25 +178,22 @@ function jobChanged(){
 
   graphData.nodes.push({
     key: job1,
-    name: data[job1]["Occupation"]
+    name: occupationDB[job1].name
   })
   graphData.nodes.push({
     key: job2,
-    name: data[job2]["Occupation"]
+    name: occupationDB[job2].name
   })
 
-  // Removing duplicates from skills
-  var skills = [...new Set([...data[job1]["skill"], ...data[job2]["skill"]])];
-  
   // Adding skills to the nodes list
-  for (var skill in skills) {
+  for (var skillID in skillsDB) {
     graphData.nodes.push({
-      name:skills[skill]
+      name:skillsDB[skillID]
     });
   }
   
   // Adding links from job to skills
-  for (var i=0; i<skills.length; i++){
+  for (var i=0; i<Object.keys(skillsDB).length; i++){
     graphData.edges.push({
       source:graphData.nodes[2+i], target:graphData.nodes[0] });
     graphData.edges.push({
@@ -183,18 +259,18 @@ function jobChanged(){
   // Draw the radar
   var skillsDataIM = [];
   var skillsDataLV = [];
-  skillsDataIM.push({ className : data[job1]["Occupation"], axes : [] });
-  skillsDataIM.push({ className : data[job2]["Occupation"], axes : [] });
-  skillsDataLV.push({ className : data[job1]["Occupation"], axes : [] });
-  skillsDataLV.push({ className : data[job2]["Occupation"], axes : [] });
+  skillsDataIM.push({ className : occupationDB[job1].name, axes : [] });
+  skillsDataIM.push({ className : occupationDB[job2].name, axes : [] });
+  skillsDataLV.push({ className : occupationDB[job1].name, axes : [] });
+  skillsDataLV.push({ className : occupationDB[job2].name, axes : [] });
 
-  for (var skill in skills) {
-    skillsDataIM[0].axes.push({ axis : skills[skill], value : skillsDB[job1][skills[skill]]['IM']});
-    skillsDataIM[1].axes.push({ axis : skills[skill], value : skillsDB[job2][skills[skill]]['IM']});
+  for (var skillID in skillsDB) {
+    skillsDataIM[0].axes.push({ axis : skillsDB[skillID], value : occupationDB[job1][skillID][0]});
+    skillsDataIM[1].axes.push({ axis : skillsDB[skillID], value : occupationDB[job1][skillID][1]});
   }
-  for (var skill in skills) {
-    skillsDataLV[0].axes.push({ axis : skills[skill], value : skillsDB[job1][skills[skill]]['LV']});
-    skillsDataLV[1].axes.push({ axis : skills[skill], value : skillsDB[job2][skills[skill]]['LV']});
+  for (var skillID in skillsDB) {
+    skillsDataLV[0].axes.push({ axis : skillsDB[skillID], value : occupationDB[job2][skillID][0]});
+    skillsDataLV[1].axes.push({ axis : skillsDB[skillID], value : occupationDB[job2][skillID][1]});
   }
 
   var chart = RadarChart.chart();
@@ -230,9 +306,12 @@ function jobChanged(){
 
 
 // Simulating a chosen option
-document.getElementById("dropdown-firstjob").value = "37-2011.00";
-document.getElementById("dropdown-secondjob").value = "27-2021.00";
-job1 = document.getElementById("dropdown-firstjob").value;
-job2 = document.getElementById("dropdown-secondjob").value;
-jobChanged();
+loadClusters();
+selectRandomClusters();
+clusterChanged();
 
+// document.getElementById("dropdown-firstjob").value = "37-2011.00";
+// document.getElementById("dropdown-secondjob").value = "27-2021.00";
+// job1 = document.getElementById("dropdown-firstjob").value;
+// job2 = document.getElementById("dropdown-secondjob").value;
+// jobChanged();
