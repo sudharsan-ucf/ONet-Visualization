@@ -56,17 +56,12 @@ function selectRandomClusters() {
   document.getElementById("dropdown-secondcluster").value = randomKey(clusterDB);
 }
 
-function clusterChanged() {
-
+function cluster1Changed() {
   var clusterID1 = document.getElementById("dropdown-firstcluster").value;
-  var clusterID2 = document.getElementById("dropdown-secondcluster").value;
-  
   d3.selectAll("#svg-canvas-force").selectAll("*").remove();
   d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
   d3.selectAll("#svg-canvas-radar2").selectAll("*").remove();
   d3.select("#dropdown-firstpathway").selectAll("option").remove();
-  d3.select("#dropdown-secondpathway").selectAll("option").remove();
-  
   for (var key in clusterDB[clusterID1].pathways) {
     var pathwayID = clusterDB[clusterID1].pathways[key]
     var pathwayName = pathwaysDB[pathwayID].name
@@ -75,7 +70,14 @@ function clusterChanged() {
       .attr("value",pathwayID)
       .text(pathwayName);
   }
+}
 
+function cluster2Changed() {
+  var clusterID2 = document.getElementById("dropdown-secondcluster").value;
+  d3.selectAll("#svg-canvas-force").selectAll("*").remove();
+  d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
+  d3.selectAll("#svg-canvas-radar2").selectAll("*").remove();
+  d3.select("#dropdown-secondpathway").selectAll("option").remove();
   for (var key in clusterDB[clusterID2].pathways) {
     var pathwayID = clusterDB[clusterID2].pathways[key]
     var pathwayName = pathwaysDB[pathwayID].name
@@ -84,17 +86,11 @@ function clusterChanged() {
       .attr("value",pathwayID)
       .text(pathwayName);
   }
-  pathwaysChanged();
 }
 
-function pathwaysChanged() {
-
+function pathways1Changed() {
   var pathwayID1 = document.getElementById("dropdown-firstpathway").value;
-  var pathwayID2 = document.getElementById("dropdown-secondpathway").value;
-
   d3.select("#dropdown-firstjob").selectAll("option").remove();
-  d3.select("#dropdown-secondjob").selectAll("option").remove();
-
   for (var key in pathwaysDB[pathwayID1].jobs) {
     var jobID = pathwaysDB[pathwayID1].jobs[key]
     var jobName = occupationDB[jobID].name
@@ -105,7 +101,11 @@ function pathwaysChanged() {
         .text(jobName);
     }
   }
+}
 
+function pathways2Changed() {
+  var pathwayID2 = document.getElementById("dropdown-secondpathway").value;
+  d3.select("#dropdown-secondjob").selectAll("option").remove();
   for (var key in pathwaysDB[pathwayID2].jobs) {
     var jobID = pathwaysDB[pathwayID2].jobs[key]
     var jobName = occupationDB[jobID].name
@@ -116,7 +116,6 @@ function pathwaysChanged() {
         .text(jobName);
     }
   }
-  jobChanged();
 }
 
 
@@ -266,10 +265,10 @@ function jobChanged(){
 
   for (var skillID in skillsDB) {
     skillsDataIM[0].axes.push({ axis : skillsDB[skillID], value : occupationDB[job1][skillID][0]});
-    skillsDataIM[1].axes.push({ axis : skillsDB[skillID], value : occupationDB[job1][skillID][1]});
+    skillsDataIM[1].axes.push({ axis : skillsDB[skillID], value : occupationDB[job2][skillID][0]});
   }
   for (var skillID in skillsDB) {
-    skillsDataLV[0].axes.push({ axis : skillsDB[skillID], value : occupationDB[job2][skillID][0]});
+    skillsDataLV[0].axes.push({ axis : skillsDB[skillID], value : occupationDB[job1][skillID][1]});
     skillsDataLV[1].axes.push({ axis : skillsDB[skillID], value : occupationDB[job2][skillID][1]});
   }
 
@@ -308,7 +307,11 @@ function jobChanged(){
 // Simulating a chosen option
 loadClusters();
 selectRandomClusters();
-clusterChanged();
+cluster1Changed();
+cluster2Changed();
+pathways1Changed();
+pathways2Changed();
+jobChanged();
 
 // document.getElementById("dropdown-firstjob").value = "37-2011.00";
 // document.getElementById("dropdown-secondjob").value = "27-2021.00";
