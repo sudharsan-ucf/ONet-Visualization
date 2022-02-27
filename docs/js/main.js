@@ -34,7 +34,10 @@ var clusterDB = JSON.parse(localStorage.getItem('clusterDB'));
 var pathwaysDB = JSON.parse(localStorage.getItem('pathwaysDB'));
 var occupationDB = JSON.parse(localStorage.getItem('occupationDB'));
 var skillsDB = JSON.parse(localStorage.getItem('skillsDB'));
-var colors = d3.scale.category10();
+// var colors = d3.scale.category10();
+var colors = d3.scale.ordinal()
+      .domain(["Job 1", "Job 2"])
+      .range(["#ee6055", "#284b63"]);
 
 
 function randomKey(dataBase) {
@@ -278,17 +281,18 @@ function jobChanged(){
   RadarChart.defaultConfig.radius = 5;
   RadarChart.defaultConfig.w = 400;
   RadarChart.defaultConfig.h = 400;
+  RadarChart.defaultConfig.color = colors
 
   RadarChart.defaultConfig.maxValue = 5;
   RadarChart.defaultConfig.levels = 5;
   var radarPlotIM = svgRadarIM.selectAll('g').data([skillsDataIM]).enter().append('g');
-  radarPlotIM.attr('transform', function(d, i) { return 'translate(100,40)'; });
+  radarPlotIM.attr('transform', function(d, i) { return 'translate(130,40)'; });
   radarPlotIM.call(chart);
 
   RadarChart.defaultConfig.maxValue = 7;
   RadarChart.defaultConfig.levels = 7;
   var radarPlotLV = svgRadarLV.selectAll('g').data([skillsDataLV]).enter().append('g');
-  radarPlotLV.attr('transform', function(d, i) { return 'translate(100,40)'; });
+  radarPlotLV.attr('transform', function(d, i) { return 'translate(130,40)'; });
   radarPlotLV.call(chart);
 
   // svgRadar.select('g.radar-chart').append('path').attr('id', "basicSkills").attr('style', "fill:#668000;fill-rule:evenodd").attr('d', "M 206.12424,116.55685 A 100,100 0 0 1 175.63319,197.80043 100,100 0 0 1 93.103497,224.616 l 13.423333,-99.09497 z");

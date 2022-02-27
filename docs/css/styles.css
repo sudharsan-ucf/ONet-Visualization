@@ -5,6 +5,10 @@
   width: 100%;
 }
 
+.btn {
+  margin-bottom: 2pt;
+}
+
 #canvas-radarIM {
   padding-right: 1px;
   padding-top: 12px;
@@ -28,6 +32,24 @@
   border-width: thin;
 }
 
+.job1-select, .job2-select{
+  color: #fdfcdc;
+  font-size: large;
+  text-align: left;
+  opacity: 0.8;
+}
+
+.job1-select:hover, .job2-select:hover{
+  opacity: 1;
+  color: #fdfcdc;
+}
+
+.job1-select {
+  background-color: #ee6055;
+}
+.job2-select {
+  background-color: #284b63;
+}
 
 
 
