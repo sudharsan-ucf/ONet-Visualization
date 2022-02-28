@@ -122,6 +122,8 @@ function pathways2Changed() {
 
 
 // Plot configurations
+var svgWidth = 850;
+var radarPlotHeight = 440;
 var jobCircleRadius = 40,
     skillCircleRadius = 20;
 var svgWidthForce, svgHeightForce;
@@ -144,16 +146,16 @@ var svgRadarIM = d3.select('#canvas-radarIM')
                 .classed("svg-content-responsive", true)
                 .classed("col", true)
                 .attr("id", "svg-canvas-radar1")
-                .attr('width', 850/2)
-                .attr('height', 500);
+                .attr('width', svgWidth/2)
+                .attr('height', radarPlotHeight);
 var svgRadarLV = d3.select('#canvas-radarLV')
                 .classed("svg-container", true)
                 .append('svg')
                 .classed("svg-content-responsive", true)
                 .classed("col", true)
                 .attr("id", "svg-canvas-radar2")
-                .attr('width', 850/2)
-                .attr('height', 500);
+                .attr('width', svgWidth/2)
+                .attr('height', radarPlotHeight);
 
 
 
@@ -288,13 +290,13 @@ function jobChanged(){
   RadarChart.defaultConfig.maxValue = 5;
   RadarChart.defaultConfig.levels = 5;
   var radarPlotIM = svgRadarIM.selectAll('g').data([skillsDataIM]).enter().append('g');
-  radarPlotIM.attr('transform', function(d, i) { return 'translate(130,40)'; });
+  radarPlotIM.attr('transform', function(d, i) { return 'translate(130,10)'; });
   radarPlotIM.call(chart);
 
   RadarChart.defaultConfig.maxValue = 7;
   RadarChart.defaultConfig.levels = 7;
   var radarPlotLV = svgRadarLV.selectAll('g').data([skillsDataLV]).enter().append('g');
-  radarPlotLV.attr('transform', function(d, i) { return 'translate(130,40)'; });
+  radarPlotLV.attr('transform', function(d, i) { return 'translate(130,10)'; });
   radarPlotLV.call(chart);
 
   // Radar Ribbon
@@ -331,36 +333,60 @@ function jobChanged(){
 
   var ribbonTooltipIM = radarBackgroundIM.append("text").classed("ribbon-tooltip", true);
   var ribbonTooltipLV = radarBackgroundLV.append("text").classed("ribbon-tooltip", true);
-  d3.selectAll(".ribbon-tooltip").attr("fill", "red").attr("transform", "translate(-120,-20)");
+  d3.selectAll(".ribbon-tooltip").attr("fill", "red").attr("transform", "translate(-120,10)");
 
-  radarBackgroundIM.selectAll("path").on("mouseover", function(d,i){
-         if (i==0) { ribbonTooltipIM.text("Basic Skills - Content")}
-    else if (i==1) { ribbonTooltipIM.text("Basic Skills - Process")}
-    else if (i==2) { ribbonTooltipIM.text("Social Skills")}
-    else if (i==3) { ribbonTooltipIM.text("Complex Problem Solving Skills")}
-    else if (i==4) { ribbonTooltipIM.text("Technical Skills")}
-    else if (i==5) { ribbonTooltipIM.text("Systems Skills")}
-    else if (i==6) { ribbonTooltipIM.text("Resource Management Skills")}
-    else           { ribbonTooltipIM.text("Error!")}
-    ribbonTooltipIM.classed("visible", true);
-  });
-  radarBackgroundLV.selectAll("path").on("mouseover", function(d,i){
-         if (i==0) { ribbonTooltipLV.text("Basic Skills - Content")}
-    else if (i==1) { ribbonTooltipLV.text("Basic Skills - Process")}
-    else if (i==2) { ribbonTooltipLV.text("Social Skills")}
-    else if (i==3) { ribbonTooltipLV.text("Complex Problem Solving Skills")}
-    else if (i==4) { ribbonTooltipLV.text("Technical Skills")}
-    else if (i==5) { ribbonTooltipLV.text("Systems Skills")}
-    else if (i==6) { ribbonTooltipLV.text("Resource Management Skills")}
-    else           { ribbonTooltipLV.text("Error!")}
-    ribbonTooltipLV.classed("visible", true);
-  });
-  radarBackgroundIM.selectAll("path").on("mouseout", function(d,i){
-    ribbonTooltipIM.classed("visible", false);
-  });
-  radarBackgroundLV.selectAll("path").on("mouseout", function(d,i){
-    ribbonTooltipLV.classed("visible", false);
-  });
+  var legendNames = [
+    "Basic Skills (Content)",
+    "Basic Skills (Process)",
+    "Social Skills",
+    "Complex Problem Solving Skills",
+    "Technical Skills",
+    "Systems Skills",
+    "Resource Management Skills"
+  ];
+
+  // radarBackgroundIM.selectAll("path").on("mouseover", function(d,i){
+  //   ribbonTooltipIM.text(legendNames[i]);
+  //   ribbonTooltipIM.classed("visible", true);
+  // });
+  // radarBackgroundLV.selectAll("path").on("mouseover", function(d,i){
+  //   ribbonTooltipLV.text(legendNames[i]);
+  //   ribbonTooltipLV.classed("visible", true);
+  // });
+  // radarBackgroundIM.selectAll("path").on("mouseout", function(d,i){
+  //   ribbonTooltipIM.classed("visible", false);
+  // });
+  // radarBackgroundLV.selectAll("path").on("mouseout", function(d,i){
+  //   ribbonTooltipLV.classed("visible", false);
+  // });
+
+  // Radar legend
+  var radarLegendHeight = 57;
+  var radarLegendTextWidth = 230;
+  var radarLegendWidth = (radarLegendTextWidth+10) * 4;
+  var topClearance = 10;
+  var leftClearance = 10;
+  var radarLegend = d3.select("#canvas-radar-legend")
+                      .classed("svg-container", false)
+                      .append('svg')
+                      .classed("svg-content-responsive", false)
+                      .attr("id", "svg-radar-legend")
+                      .attr("height", radarLegendHeight)
+                      .attr("width", radarLegendWidth);
+  
+  for (var x in legendNames) {
+    radarLegend.append("rect")
+      .attr("x", leftClearance + radarLegendTextWidth*(x%4))
+      .attr("y", topClearance -5 + 25*Math.floor(x/4))
+      .attr("width", 20).attr("height", 20)
+      .style("fill", ribbonColors(x))
+      .style("stroke", "black");
+    radarLegend.append("text")
+      .attr("x", leftClearance + 25 + radarLegendTextWidth*(x%4))
+      .attr("y", topClearance + 10 + 25*Math.floor(x/4))
+      .attr("width", radarLegendTextWidth).attr("height", 10)
+      .text(legendNames[x]);
+  }
 
 } // End of jobchanged()
 

@@ -39,15 +39,22 @@ body {
 #canvas-force {
   padding: 12px;
 }
-  
+
+#svg-radar-legend {
+  border-color: lightgray;
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+}
+
 .svg-content-responsive {
   display: block;
   margin: 1px;
   padding: 0px;
   width: 100%;
-  border-color: lightgray;
-  border-style: solid;
-  border-width: thin;
+  /* border-color: lightgray; */
+  /* border-style: solid; */
+  /* border-width: thin; */
 }
 
 .job1-select, .job2-select{
