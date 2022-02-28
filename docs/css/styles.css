@@ -1,8 +1,26 @@
 @import url(https://fonts.googleapis.com/css?family=Raleway:400);
 
+body {
+  background-color:linen;
+}
 
 .cluster-select, .pathway-select, .job-select {
   width: 100%;
+}
+
+.radar-chart > g > path {
+  fill:#0F0;
+  stroke: none;
+  stroke-width:0;
+  opacity:0.7;
+}
+
+.ribbon-tooltip {
+  opacity: 0;
+}
+
+.ribbon-tooltip.visible{
+  opacity: 1;
 }
 
 .btn {

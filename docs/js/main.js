@@ -34,7 +34,6 @@ var clusterDB = JSON.parse(localStorage.getItem('clusterDB'));
 var pathwaysDB = JSON.parse(localStorage.getItem('pathwaysDB'));
 var occupationDB = JSON.parse(localStorage.getItem('occupationDB'));
 var skillsDB = JSON.parse(localStorage.getItem('skillsDB'));
-// var colors = d3.scale.category10();
 var colors = d3.scale.ordinal()
       .domain(["Job 1", "Job 2"])
       .range(["#ee6055", "#284b63"]);
@@ -266,11 +265,14 @@ function jobChanged(){
   skillsDataLV.push({ className : occupationDB[job1].name, axes : [] });
   skillsDataLV.push({ className : occupationDB[job2].name, axes : [] });
 
-  for (var skillID in skillsDB) {
+  var sortedKeys = Object.keys(skillsDB).sort().reverse();
+  for (var skillKey in sortedKeys) {
+    skillID = sortedKeys[skillKey]
     skillsDataIM[0].axes.push({ axis : skillsDB[skillID], value : occupationDB[job1][skillID][0]});
     skillsDataIM[1].axes.push({ axis : skillsDB[skillID], value : occupationDB[job2][skillID][0]});
   }
-  for (var skillID in skillsDB) {
+  for (var skillKey in sortedKeys) {
+    skillID = sortedKeys[skillKey]
     skillsDataLV[0].axes.push({ axis : skillsDB[skillID], value : occupationDB[job1][skillID][1]});
     skillsDataLV[1].axes.push({ axis : skillsDB[skillID], value : occupationDB[job2][skillID][1]});
   }
@@ -295,15 +297,70 @@ function jobChanged(){
   radarPlotLV.attr('transform', function(d, i) { return 'translate(130,40)'; });
   radarPlotLV.call(chart);
 
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "basicSkills").attr('style', "fill:#668000;fill-rule:evenodd").attr('d', "M 206.12424,116.55685 A 100,100 0 0 1 175.63319,197.80043 100,100 0 0 1 93.103497,224.616 l 13.423333,-99.09497 z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "crossSkills").attr('style', "fill:#88aa00;fill-rule:evenodd").attr('d', "M 93.104,224.61607 A 100,100 0 0 1 6.7057983,119.54097 100,100 0 0 1 105.03068,25.53222 a 100,100 0 0 1 101.09358,91.0248 l -99.59743,8.96401 z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-resource").attr('style', "fill:#e9afaf;fill-rule:evenodd").attr('d', "m 161.96856,67.724629 a 80.227188,79.961998 0 0 1 24.46248,50.628601 l -79.90421,7.1678 z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-systems").attr('style', "fill:#de8787;fill-rule:evenodd").attr('d', "m 124.37887,47.563799 a 80.227188,79.961998 0 0 1 37.58999,20.161117 l -55.44203,57.796114 z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-technical").attr('style', "fill:#d35f5f;fill-rule:evenodd").attr('d', "M 27.589,139.79919 A 80.227188,79.961998 0 0 1 51.084653,67.725064 80.227188,79.961998 0 0 1 124.379,47.563829 l -17.85217,77.957201 z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-complex").attr('style', "fill:#c83737;fill-rule:evenodd").attr('d', "M 31.41513,153.6171 A 80.227188,79.961998 0 0 1 27.589,139.79918 l 78.93783,-14.27815 z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "cross-social").attr('style', "fill:#a02c2c;fill-rule:evenodd").attr('d', "M 95.758074,204.7594 A 80.227188,79.961998 0 0 1 31.415327,153.61762 l 75.111503,-28.09659 z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "basic-process").attr('style', "fill:#782121;fill-rule:evenodd").attr('d', "M 150.72425,192.25484 A 80.227188,79.961998 0 0 1 95.757668,204.75935 L 106.52683,125.52103 Z");
-  // svgRadar.select('g.radar-chart').append('path').attr('id', "basic-content").attr('style', "fill:#501616;fill-rule:evenodd").attr('d', "m 186.43103,118.35309 a 80.227188,79.961998 0 0 1 -35.70728,73.90208 l -44.19692,-66.73414 z");
+  // Radar Ribbon
+  var rCx = parseInt(d3.select(".axis > line").attr('x1'));
+  var rCy = parseInt(d3.select(".axis > line").attr('y1'));
+  var rCx2 = parseInt(d3.select(".axis > line").attr('x2'));
+  var rCy2 = parseInt(d3.select(".axis > line").attr('y2'));
+  var ribbonRadius = ((rCx2-rCx)**2 + (rCy2-rCy)**2)**0.5;
+  var ribbonWidth = 9;
+  var radarBackgroundIM = d3.select("#canvas-radarIM").select(".radar-chart").append("g").classed("radar-ribbon",1);
+  var radarBackgroundLV = d3.select("#canvas-radarLV").select(".radar-chart").append("g").classed("radar-ribbon",1);
+  var ribbonColors = d3.scale.category20();
+
+  radarBackgroundIM.append("path").attr("id", "basicSkillsContent").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 5.142857, 66.857143));
+  radarBackgroundIM.append("path").attr("id", "basicSkillsProcess").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 66.857143, 108.000000));
+  radarBackgroundIM.append("path").attr("id", "socialSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 108.000000, 169.714286));
+  radarBackgroundIM.append("path").attr("id", "complexProblemSolvingSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 169.714286, 180.000000));
+  radarBackgroundIM.append("path").attr("id", "technicalSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 180.000000, 293.142857));
+  radarBackgroundIM.append("path").attr("id", "systemsSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 293.142857, 324.000000));
+  radarBackgroundIM.append("path").attr("id", "resourceManagementSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 324.000000, 5.142857));
+  radarBackgroundIM.selectAll("path").attr("style", function(d,i){
+    return "fill : " + ribbonColors(i);
+  });
+  radarBackgroundLV.append("path").attr("id", "basicSkillsContent").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 5.142857, 66.857143));
+  radarBackgroundLV.append("path").attr("id", "basicSkillsProcess").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 66.857143, 108.000000));
+  radarBackgroundLV.append("path").attr("id", "socialSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 108.000000, 169.714286));
+  radarBackgroundLV.append("path").attr("id", "complexProblemSolvingSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 169.714286, 180.000000));
+  radarBackgroundLV.append("path").attr("id", "technicalSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 180.000000, 293.142857));
+  radarBackgroundLV.append("path").attr("id", "systemsSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 293.142857, 324.000000));
+  radarBackgroundLV.append("path").attr("id", "resourceManagementSkills").attr("d", describeArc(rCx, rCy, ribbonRadius, ribbonRadius+ribbonWidth, 324.000000, 5.142857));
+  radarBackgroundLV.selectAll("path").attr("style", function(d,i){
+    return "fill : " + ribbonColors(i);
+  });
+
+  var ribbonTooltipIM = radarBackgroundIM.append("text").classed("ribbon-tooltip", true);
+  var ribbonTooltipLV = radarBackgroundLV.append("text").classed("ribbon-tooltip", true);
+  d3.selectAll(".ribbon-tooltip").attr("fill", "red").attr("transform", "translate(-120,-20)");
+
+  radarBackgroundIM.selectAll("path").on("mouseover", function(d,i){
+         if (i==0) { ribbonTooltipIM.text("Basic Skills - Content")}
+    else if (i==1) { ribbonTooltipIM.text("Basic Skills - Process")}
+    else if (i==2) { ribbonTooltipIM.text("Social Skills")}
+    else if (i==3) { ribbonTooltipIM.text("Complex Problem Solving Skills")}
+    else if (i==4) { ribbonTooltipIM.text("Technical Skills")}
+    else if (i==5) { ribbonTooltipIM.text("Systems Skills")}
+    else if (i==6) { ribbonTooltipIM.text("Resource Management Skills")}
+    else           { ribbonTooltipIM.text("Error!")}
+    ribbonTooltipIM.classed("visible", true);
+  });
+  radarBackgroundLV.selectAll("path").on("mouseover", function(d,i){
+         if (i==0) { ribbonTooltipLV.text("Basic Skills - Content")}
+    else if (i==1) { ribbonTooltipLV.text("Basic Skills - Process")}
+    else if (i==2) { ribbonTooltipLV.text("Social Skills")}
+    else if (i==3) { ribbonTooltipLV.text("Complex Problem Solving Skills")}
+    else if (i==4) { ribbonTooltipLV.text("Technical Skills")}
+    else if (i==5) { ribbonTooltipLV.text("Systems Skills")}
+    else if (i==6) { ribbonTooltipLV.text("Resource Management Skills")}
+    else           { ribbonTooltipLV.text("Error!")}
+    ribbonTooltipLV.classed("visible", true);
+  });
+  radarBackgroundIM.selectAll("path").on("mouseout", function(d,i){
+    ribbonTooltipIM.classed("visible", false);
+  });
+  radarBackgroundLV.selectAll("path").on("mouseout", function(d,i){
+    ribbonTooltipLV.classed("visible", false);
+  });
 
 } // End of jobchanged()
 
