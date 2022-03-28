@@ -173,6 +173,7 @@ function jobChanged(){
   d3.selectAll("#svg-canvas-force").selectAll("*").remove();
   d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
   d3.selectAll("#svg-canvas-radar2").selectAll("*").remove();
+  d3.selectAll("#canvas-radar-legend").selectAll("*").remove();
 
   var graphData = {
     "nodes": [],
