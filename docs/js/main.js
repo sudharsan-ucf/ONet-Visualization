@@ -93,8 +93,9 @@ function cluster2Changed() {
 function pathways1Changed() {
   var pathwayID1 = document.getElementById("dropdown-firstpathway").value;
   d3.select("#dropdown-firstjob").selectAll("option").remove();
-  for (var key in pathwaysDB[pathwayID1].jobs) {
-    var jobID = pathwaysDB[pathwayID1].jobs[key]
+  var sortedJobs = pathwaysDB[pathwayID1].jobs.sort((a,b) => { return occupationDB[a].score - occupationDB[b].score });
+  for (var key in sortedJobs) {
+    var jobID = sortedJobs[key]
     var jobName = occupationDB[jobID].name
     if (Object.keys(occupationDB[jobID]).length > 1) {
       d3.select("#dropdown-firstjob")
@@ -108,8 +109,9 @@ function pathways1Changed() {
 function pathways2Changed() {
   var pathwayID2 = document.getElementById("dropdown-secondpathway").value;
   d3.select("#dropdown-secondjob").selectAll("option").remove();
-  for (var key in pathwaysDB[pathwayID2].jobs) {
-    var jobID = pathwaysDB[pathwayID2].jobs[key]
+  var sortedJobs = pathwaysDB[pathwayID2].jobs.sort((a,b) => { return occupationDB[a].score - occupationDB[b].score });
+  for (var key in sortedJobs) {
+    var jobID = sortedJobs[key]
     var jobName = occupationDB[jobID].name
     if (Object.keys(occupationDB[jobID]).length > 1) {
       d3.select("#dropdown-secondjob")
