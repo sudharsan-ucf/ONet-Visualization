@@ -66,16 +66,35 @@ function splitText(label, sizeLimit) {
       labelsO[lineCounter] += str;
     }
   }
-  return labelsO;
+  return labelsO
 }
 
 function calcL1Score(job1, job2) {
   var value = 0;
   Object.keys(skillsDB).forEach(function(v,i,a){
     value += occupationDB[job2][v][1] - occupationDB[job1][v][1];
-    // console.log(v, occupationDB[job1][v], occupationDB[job2][v]);
   })
   return value.toFixed(3)
+}
+
+function calcL2Score(job1, job2) {
+  var num = 0;
+  var tmp = 0;
+  var result = 0;
+  Object.keys(skillsDB).forEach(function(v,i,a){
+    num += occupationDB[job2][v][2] - occupationDB[job1][v][2];
+  });
+  tmp = 0;
+  Object.keys(skillsDB).forEach(function(v,i,a){
+    tmp += occupationDB[job1][v][2]**2;
+  });
+  result = num/Math.sqrt(tmp);
+  tmp = 0
+  Object.keys(skillsDB).forEach(function(v,i,a){
+    tmp += occupationDB[job2][v][2]**2;
+  });
+  result = num/Math.sqrt(tmp);
+  return result.toFixed(3)
 }
 
 
@@ -224,6 +243,7 @@ function jobChanged(){
   d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
   d3.selectAll("#svg-canvas-radar2").selectAll("*").remove();
   d3.selectAll("#canvas-radar-legend").selectAll("*").remove();
+  svgHeightForce = 100;
 
   [document.getElementById("dropdown-firstpathway").value, document.getElementById("dropdown-secondpathway").value].forEach(function(pathwayID,pathwayIndex,array){
     pathwaysDB[pathwayID].jobs.forEach(function(jobID,jobIndex,array){
@@ -246,12 +266,26 @@ function jobChanged(){
         tmpG.select("rect").classed("jobPathway-selected", true);
       }
       if (pathwayIndex==1) {
+        var L1 = calcL1Score(job1, jobID);
+        var L2 = calcL2Score(job1, jobID);
         tmpG.append("text")
-          .attr("x", svgWidthForce/2+svgPathPushLeft)
-          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2)
+          .attr("x", svgWidthForce/2+200)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 - 10)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
-          .attr("text-anchor", "middle")
-          .text("L1 Score : " + calcL1Score(job1, jobID));
+          .attr("text-anchor", "end")
+          .text("Difficulty : " + L1);
+        tmpG.append("text")
+          .attr("x", svgWidthForce/2+200)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 8)
+          .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+          .attr("text-anchor", "end")
+          .text("Similarity : " + L2);
+        tmpG.append("text")
+          .attr("x", svgWidthForce/2+200)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 26)
+          .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+          .attr("text-anchor", "end")
+          .text("Final Score : " + (L1*L2).toFixed(3));
       }
       // // Connecting Arrows
       // if (pathwayIndex==1){
@@ -266,11 +300,23 @@ function jobChanged(){
     });
   });
   svgCanvasPath.append("text")
-    .attr("x", 20)
-    .attr("y", 15)
+    .attr("x", 50)
+    .attr("y", svgHeightForce + pathBoxSpacingYoffset)
     .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
     .attr("text-anchor", "left")
-    .text("L1 Score indicates the difficulty to transition to the job. A negative score implies that most skills are already met with the current job.");
+    .text("Difficulty is calculated using L1 Norm. A negative score implies that most skills are already met with the current job.");
+  svgCanvasPath.append("text")
+    .attr("x", 50)
+    .attr("y", svgHeightForce + pathBoxSpacingYoffset+20)
+    .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
+    .attr("text-anchor", "left")
+    .text("Similarity is calculated using Cosine Similarity.");
+  svgCanvasPath.append("text")
+    .attr("x", 50)
+    .attr("y", svgHeightForce + pathBoxSpacingYoffset+40)
+    .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
+    .attr("text-anchor", "left")
+    .text("Final score is the product of the two.");
   svgCanvasPath.attr("height", svgHeightForce + svgForceFooter);
 
   // Draw the radar
