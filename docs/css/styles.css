@@ -52,9 +52,9 @@ body {
   margin: 1px;
   padding: 0px;
   width: 100%;
-  /* border-color: lightgray; */
-  /* border-style: solid; */
-  /* border-width: thin; */
+  border-color: lightgray;
+  border-style: solid;
+  border-width: thin;
 }
 
 .job1-select, .job2-select{
@@ -140,4 +140,17 @@ body {
 }
 .radar-chart .d3-enter, .radar-chart .d3-exit {
   opacity: 0;
+}
+
+
+
+/* Career Path Styling */
+
+#svg-canvas-force rect{
+  opacity: 0.5;
+  stroke: black;
+}
+
+#svg-canvas-force .jobPathway-selected{
+  stroke-width: 5px;
 }

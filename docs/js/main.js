@@ -39,6 +39,46 @@ var colors = d3.scale.ordinal()
       .range(["#ee6055", "#284b63"]);
 
 
+// Supporting functions
+
+function getTextWidth(text, font = "16px Segoe") {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  context.font = font;
+  return context.measureText(text).width;
+}
+
+function splitText(label, sizeLimit) {
+  var labels = label.split(" ");
+  var labelsO = [];
+  var currentLength = sizeLimit+1;
+  var lineCounter = -1;
+  for (var i=0; i<labels.length; i++) {
+    var str = labels[i];
+    var len = getTextWidth(" "+labels[i]);
+    if (currentLength + len <= sizeLimit) {
+      currentLength += len;
+      labelsO[lineCounter] += " "+str;
+    } else {
+      lineCounter += 1;
+      currentLength = len;
+      labelsO.push("");
+      labelsO[lineCounter] += str;
+    }
+  }
+  return labelsO;
+}
+
+function calcL1Score(job1, job2) {
+  var value = 0;
+  Object.keys(skillsDB).forEach(function(v,i,a){
+    value += occupationDB[job2][v][1] - occupationDB[job1][v][1];
+    // console.log(v, occupationDB[job1][v], occupationDB[job2][v]);
+  })
+  return value.toFixed(3)
+}
+
+
 function randomKey(dataBase) {
   var tmpKeys = Object.keys(dataBase);
   return tmpKeys[Math.floor(Math.random() * tmpKeys.length)];
@@ -128,18 +168,25 @@ var svgWidth = 850;
 var radarPlotHeight = 440;
 var jobCircleRadius = 40,
     skillCircleRadius = 20;
-var svgWidthForce, svgHeightForce;
+var svgWidthForce,
+    svgHeightForce = 100;
+var pathBoxWidth = 400,
+    pathBoxHeight = 50,
+    pathTextHeight = 20,
+    pathBoxSpacingY = 60,
+    pathBoxSpacingYoffset = 30,
+    svgPathPushLeft = 100,
+    svgForceFooter = 100;
 
     
 // Creating the SVG canvas for force drawing
-var canvasForce = d3.select('#canvas-force')
+var svgCanvasPath = d3.select('#canvas-force')
   .classed("svg-container", true)
   .append('svg')
   .classed("svg-content-responsive", true)
   .attr("id", "svg-canvas-force")
-  .attr("height", "600");
+  .attr("height", svgHeightForce);
 svgWidthForce = document.getElementById("svg-canvas-force").getBoundingClientRect().width;
-svgHeightForce = 600;
 
 // Creating the SVG canvas for force drawing
 var svgRadarIM = d3.select('#canvas-radarIM')
@@ -164,6 +211,7 @@ var svgRadarLV = d3.select('#canvas-radarLV')
 function jobChanged(){
   var job1 = document.getElementById("dropdown-firstjob").value;
   var job2 = document.getElementById("dropdown-secondjob").value;
+  var jobs = [job1, job2];
   if (job1 == "") {
     return;
   } else if (job2 == "") {
@@ -177,90 +225,53 @@ function jobChanged(){
   d3.selectAll("#svg-canvas-radar2").selectAll("*").remove();
   d3.selectAll("#canvas-radar-legend").selectAll("*").remove();
 
-  var graphData = {
-    "nodes": [],
-    "edges": []
-  };
-
-  graphData.nodes.push({
-    key: job1,
-    name: occupationDB[job1].name
-  })
-  graphData.nodes.push({
-    key: job2,
-    name: occupationDB[job2].name
-  })
-
-  // Adding skills to the nodes list
-  for (var skillID in skillsDB) {
-    graphData.nodes.push({
-      name:skillsDB[skillID]
+  [document.getElementById("dropdown-firstpathway").value, document.getElementById("dropdown-secondpathway").value].forEach(function(pathwayID,pathwayIndex,array){
+    pathwaysDB[pathwayID].jobs.forEach(function(jobID,jobIndex,array){
+      tmpG = svgCanvasPath.append("g");
+      tmpG.append("rect")
+        .attr("x", svgWidthForce*1/4+pathwayIndex*svgWidthForce/2-pathBoxWidth/2-svgPathPushLeft+pathwayIndex*2*svgPathPushLeft)
+        .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex))
+        .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+        .style("fill", colors(pathwayIndex));
+      splitText(occupationDB[jobID].name, pathBoxWidth-50).forEach(function(string, stringID, array){
+        tmpG.append("text")
+          .attr("x", svgWidthForce*1/4+pathwayIndex*svgWidthForce/2-svgPathPushLeft+pathwayIndex*2*svgPathPushLeft)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2+pathTextHeight*stringID-pathTextHeight*(array.length-1)/2+5)
+          .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+          .attr("text-anchor", "middle")
+          .text(string);
+      });
+      svgHeightForce = Math.max(svgHeightForce, pathBoxSpacingYoffset+(pathBoxSpacingY*array.length));
+      if (jobs[pathwayIndex] == jobID) {
+        tmpG.select("rect").classed("jobPathway-selected", true);
+      }
+      if (pathwayIndex==1) {
+        tmpG.append("text")
+          .attr("x", svgWidthForce/2+svgPathPushLeft)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2)
+          .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+          .attr("text-anchor", "middle")
+          .text("L1 Score : " + calcL1Score(job1, jobID));
+      }
+      // // Connecting Arrows
+      // if (pathwayIndex==1){
+      //   tmpG.append("line")
+      //     .attr("x1", svgWidthForce*1/4-pathBoxWidth/2+pathBoxWidth-svgPathPushLeft)
+      //     .attr("y1", pathBoxSpacingYoffset+pathBoxSpacingY*(tmpRectIndex)+pathBoxHeight/2)
+      //     .attr("x2", svgWidthForce*1/4+pathwayIndex*svgWidthForce/2-pathBoxWidth/2-svgPathPushLeft+pathwayIndex*2*svgPathPushLeft)
+      //     .attr("y2", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2)
+      //     .attr("stroke", "black")
+      //     .attr("stroke-width", 1)
+      // }
     });
-  }
-  
-  // Adding links from job to skills
-  for (var i=0; i<Object.keys(skillsDB).length; i++){
-    graphData.edges.push({
-      source:graphData.nodes[2+i], target:graphData.nodes[0] });
-    graphData.edges.push({
-      source:graphData.nodes[2+i], target:graphData.nodes[1] });
-  }
-  
-  // Creating the force layout
-  var d3force = d3.layout.force()
-                .nodes(graphData.nodes)
-                .links([])
-                .gravity(0.1)
-                // .linkDistance([50])
-                .charge([-200])
-                .size([svgWidthForce,svgHeightForce])
-                .start();
-
-  var link =  canvasForce.selectAll('line')
-                .data(graphData.edges).enter()
-                .append('line')
-                .style('stroke', '#eee')
-                .style('stroke-width', '2');
-
-  // Creating a group element as nodes
-  var node =  canvasForce.selectAll('circle')  
-                .data(graphData.nodes).enter()
-                .append('g') 
-                .call(d3force.drag);
-
-  node.append("circle")
-      .classed("job-circle", true)
-      .attr("cx", function(d){ return 0;})
-      .attr("cy", function(d){ return 0;})
-      .attr("r", function(d, i){ 
-        if ( i < 2 ) { return jobCircleRadius; }
-        else { return skillCircleRadius; }})
-      .attr('fill', function(d,i){
-        if ( i < 2 ) { return '#f00'; }
-        else { return colors(i); }})
-      .attr('strokewidth', function(d,i){
-        if ( i < 2 ) { return '4'; }
-        else { return '1'; }})
-      .attr('stroke', function(d,i){ return 'black'; });
-
-  d3force.on("tick", function(e){
-    node.attr('transform', function(d, i){
-      return 'translate(' + d.x + ','+ d.y + ')'
-    })
-    link.attr('x1', function(d){ return d.source.x; }) 
-        .attr('y1', function(d){ return d.source.y; })
-        .attr('x2', function(d){ return d.target.x; })
-        .attr('y2', function(d){ return d.target.y; })
   });
-
-  node.append('text')
-    .text(function(d){ return d.name; })
-    .attr('font-family', 'Raleway', 'Helvetica Neue, Helvetica')
-    .attr('fill', function(d, i){ return 'black'; })
-    .attr('text-anchor', function(d, i) { return 'middle'; })
-    .attr('font-size', function(d, i){
-      if (i < 2 ) { return '.6em'; } else { return '.5em'; }});
-  
+  svgCanvasPath.append("text")
+    .attr("x", 20)
+    .attr("y", 15)
+    .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
+    .attr("text-anchor", "left")
+    .text("L1 Score indicates the difficulty to transition to the job. A negative score implies that most skills are already met with the current job.");
+  svgCanvasPath.attr("height", svgHeightForce + svgForceFooter);
 
   // Draw the radar
   var skillsDataIM = [];
