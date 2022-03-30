@@ -21,16 +21,16 @@
     <div class="container">
       <h1>ONET - Skill Visualization</h1>
       <div class="row justify-content-around">
-        <div class="col-md job-dropdowns"><select id="dropdown-firstcluster" class="btn cluster-select job1-select" onchange="cluster1Changed()" aria-label="First cluster selector"></select></div>
-        <div class="col-md job-dropdowns"><select id="dropdown-secondcluster" class="btn cluster-select job2-select" onchange="cluster2Changed()" aria-label="Second cluster selector"></select></div>
+        <div class="col-md job-dropdowns"><select id="dropdown-firstcluster" class="btn cluster-select job1-select" onchange="cluster1Changed()" onfocus="this.selectedIndex = -1;" aria-label="First cluster selector"></select></div>
+        <div class="col-md job-dropdowns"><select id="dropdown-secondcluster" class="btn cluster-select job2-select" onchange="cluster2Changed()" onfocus="this.selectedIndex = -1;" aria-label="Second cluster selector"></select></div>
       </div>
       <div class="row justify-content-around">
-        <div class="col-md job-dropdowns"><select id="dropdown-firstpathway" class="btn pathway-select job1-select" onchange="pathways1Changed()" aria-label="First pathway selector"></select></div>
-        <div class="col-md job-dropdowns"><select id="dropdown-secondpathway" class="btn pathway-select job2-select" onchange="pathways2Changed()" aria-label="Second pathway selector"></select></div>
+        <div class="col-md job-dropdowns"><select id="dropdown-firstpathway" class="btn pathway-select job1-select" onchange="pathways1Changed()" onfocus="this.selectedIndex = -1;" aria-label="First pathway selector"></select></div>
+        <div class="col-md job-dropdowns"><select id="dropdown-secondpathway" class="btn pathway-select job2-select" onchange="pathways2Changed()" onfocus="this.selectedIndex = -1;" aria-label="Second pathway selector"></select></div>
       </div>
       <div class="row justify-content-around">
-        <div class="col-md job-dropdowns"><select id="dropdown-firstjob" class="btn job-select job1-select" onchange="jobChanged()" aria-label="First job selector"></select></div>
-        <div class="col-md job-dropdowns"><select id="dropdown-secondjob" class="btn job-select job2-select" onchange="jobChanged()" aria-label="Second job selector"></select></div>
+        <div class="col-md job-dropdowns"><select id="dropdown-firstjob" class="btn job-select job1-select" onchange="jobChanged()" onfocus="this.selectedIndex = -1;" aria-label="First job selector"></select></div>
+        <div class="col-md job-dropdowns"><select id="dropdown-secondjob" class="btn job-select job2-select" onchange="jobChanged()" onfocus="this.selectedIndex = -1;" aria-label="Second job selector"></select></div>
       </div>
       <div class="row" id="canvas-radar">
         <div class="col" id="canvas-radarIM">
