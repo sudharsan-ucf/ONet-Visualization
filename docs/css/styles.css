@@ -147,10 +147,21 @@ body {
 /* Career Path Styling */
 
 #svg-canvas-force rect{
-  opacity: 0.5;
+  opacity: 0.8;
   stroke: black;
 }
 
+#svg-canvas-force g.svg-text-other text {
+  fill: black;
+  font-size: large;
+}
+
+#svg-canvas-force > g > text {
+  fill: #fdfcdc;
+  font-size: large;
+}
+
 #svg-canvas-force .jobPathway-selected{
-  stroke-width: 5px;
+  opacity: 1;
+  stroke-width: 3px;
 }

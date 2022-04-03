@@ -41,7 +41,7 @@ var colors = d3.scale.ordinal()
 
 // Supporting functions
 
-function getTextWidth(text, font = "16px Segoe") {
+function getTextWidth(text, font = "large Segoe") {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   context.font = font;
@@ -78,22 +78,21 @@ function calcL1Score(job1, job2) {
 }
 
 function calcL2Score(job1, job2) {
-  var num = 0;
   var tmp = 0;
   var result = 0;
   Object.keys(skillsDB).forEach(function(v,i,a){
-    num += occupationDB[job2][v][2] - occupationDB[job1][v][2];
+    result += occupationDB[job2][v][2] * occupationDB[job1][v][2];
   });
   tmp = 0;
   Object.keys(skillsDB).forEach(function(v,i,a){
     tmp += occupationDB[job1][v][2]**2;
   });
-  result = num/Math.sqrt(tmp);
+  result = result/Math.sqrt(tmp);
   tmp = 0
   Object.keys(skillsDB).forEach(function(v,i,a){
     tmp += occupationDB[job2][v][2]**2;
   });
-  result = num/Math.sqrt(tmp);
+  result = result/Math.sqrt(tmp);
   return result.toFixed(3)
 }
 
@@ -245,6 +244,8 @@ function jobChanged(){
   d3.selectAll("#canvas-radar-legend").selectAll("*").remove();
   svgHeightForce = 100;
 
+  otherG = svgCanvasPath.append("g")
+    .classed("svg-text-other", true);
   [document.getElementById("dropdown-firstpathway").value, document.getElementById("dropdown-secondpathway").value].forEach(function(pathwayID,pathwayIndex,array){
     pathwaysDB[pathwayID].jobs.forEach(function(jobID,jobIndex,array){
       tmpG = svgCanvasPath.append("g");
@@ -252,6 +253,7 @@ function jobChanged(){
         .attr("x", svgWidthForce*1/4+pathwayIndex*svgWidthForce/2-pathBoxWidth/2-svgPathPushLeft+pathwayIndex*2*svgPathPushLeft)
         .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex))
         .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+        .classed("svg-pathway-rect", true)
         .style("fill", colors(pathwayIndex));
       splitText(occupationDB[jobID].name, pathBoxWidth-50).forEach(function(string, stringID, array){
         tmpG.append("text")
@@ -268,19 +270,19 @@ function jobChanged(){
       if (pathwayIndex==1) {
         var L1 = calcL1Score(job1, jobID);
         var L2 = calcL2Score(job1, jobID);
-        tmpG.append("text")
+        otherG.append("text")
           .attr("x", svgWidthForce/2+200)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 - 10)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "end")
           .text("Difficulty : " + L1);
-        tmpG.append("text")
+        otherG.append("text")
           .attr("x", svgWidthForce/2+200)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 8)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "end")
           .text("Similarity : " + L2);
-        tmpG.append("text")
+        otherG.append("text")
           .attr("x", svgWidthForce/2+200)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 26)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
