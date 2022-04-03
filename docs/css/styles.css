@@ -91,7 +91,7 @@ body {
   stroke-width: 1;
 }
 .radar-chart .axis .legend {
-  font-family: sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 10px;
 }
 .radar-chart .axis .legend.top {
@@ -108,7 +108,7 @@ body {
 }
 
 .radar-chart .tooltip {
-  font-family: sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 13px;
   transition: opacity 200ms;
   opacity: 0;
