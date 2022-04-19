@@ -71,9 +71,14 @@ function splitText(label, sizeLimit) {
 
 function calcL1Score(job1, job2) {
   var value = 0;
+  var tmp = 0;
   Object.keys(skillsDB).forEach(function(v,i,a){
-    value += occupationDB[job2][v][1] - occupationDB[job1][v][1];
+    tmp = occupationDB[job2][v][1] - occupationDB[job1][v][1];
+    if (tmp>0) {
+      value += tmp;
+    }
   })
+  value = value/(35*7);
   return value.toFixed(3)
 }
 
@@ -94,6 +99,10 @@ function calcL2Score(job1, job2) {
   });
   result = result/Math.sqrt(tmp);
   return result.toFixed(3)
+}
+
+function calcMissingSkills(job1, jobID) {
+  return ['a', 'b', 'c']
 }
 
 
@@ -117,6 +126,7 @@ function selectRandomClusters() {
 }
 
 function cluster1Changed() {
+  console.log("cluster1Changed()");
   var clusterID1 = document.getElementById("dropdown-firstcluster").value;
   d3.selectAll("#svg-canvas-force").selectAll("*").remove();
   d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
@@ -133,6 +143,7 @@ function cluster1Changed() {
 }
 
 function cluster2Changed() {
+  console.log("cluster2Changed()");
   var clusterID2 = document.getElementById("dropdown-secondcluster").value;
   d3.selectAll("#svg-canvas-force").selectAll("*").remove();
   d3.selectAll("#svg-canvas-radar1").selectAll("*").remove();
@@ -149,6 +160,7 @@ function cluster2Changed() {
 }
 
 function pathways1Changed() {
+  console.log("pathways1Changed()");
   var pathwayID1 = document.getElementById("dropdown-firstpathway").value;
   d3.select("#dropdown-firstjob").selectAll("option").remove();
   var sortedJobs = pathwaysDB[pathwayID1].jobs.sort((a,b) => { return occupationDB[a].score - occupationDB[b].score });
@@ -165,6 +177,7 @@ function pathways1Changed() {
 }
 
 function pathways2Changed() {
+  console.log("pathways2Changed()");
   var pathwayID2 = document.getElementById("dropdown-secondpathway").value;
   d3.select("#dropdown-secondjob").selectAll("option").remove();
   var sortedJobs = pathwaysDB[pathwayID2].jobs.sort((a,b) => { return occupationDB[a].score - occupationDB[b].score });
@@ -227,6 +240,7 @@ var svgRadarLV = d3.select('#canvas-radarLV')
 
 
 function jobChanged(){
+  console.log("jobChanged()");
   var job1 = document.getElementById("dropdown-firstjob").value;
   var job2 = document.getElementById("dropdown-secondjob").value;
   var jobs = [job1, job2];
@@ -270,6 +284,8 @@ function jobChanged(){
       if (pathwayIndex==1) {
         var L1 = calcL1Score(job1, jobID);
         var L2 = calcL2Score(job1, jobID);
+        var missing1, missing2, missing3;
+        [missing1, missing2, missing3] = calcMissingSkills(job1, jobID);
         otherG.append("text")
           .attr("x", svgWidthForce/2+200)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 - 10)
@@ -288,6 +304,24 @@ function jobChanged(){
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "end")
           .text("Final Score : " + (L1*L2).toFixed(3));
+        otherG.append("text")
+          .attr("x", svgWidthForce/2-150)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 - 10)
+          .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+          .attr("text-anchor", "begin")
+          .text("Skill 1 : " + missing1);
+        otherG.append("text")
+          .attr("x", svgWidthForce/2-150)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 8)
+          .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+          .attr("text-anchor", "begin")
+          .text("Skill 2 : " + missing2);
+        otherG.append("text")
+          .attr("x", svgWidthForce/2-150)
+          .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 26)
+          .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+          .attr("text-anchor", "begin")
+          .text("Skill 3 : " + missing3);
       }
       // // Connecting Arrows
       // if (pathwayIndex==1){
