@@ -101,8 +101,14 @@ function calcL2Score(job1, job2) {
   return result.toFixed(3)
 }
 
-function calcMissingSkills(job1, jobID) {
-  return ['a', 'b', 'c']
+function calcMissingSkills(job1, job2) {
+  var differences = [];
+  Object.keys(skillsDB).forEach(function(v,i,a){
+    differences.push([occupationDB[job2][v][1] - occupationDB[job1][v][1], skillsDB[v]]);
+  })
+  differences.sort().reverse();
+  console.log(differences);
+  return [differences[0][1], differences[1][1], differences[2][1]]
 }
 
 
