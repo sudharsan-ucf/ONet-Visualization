@@ -213,7 +213,7 @@ var pathBoxWidth = 300,
     pathBoxSpacingY = 90,
     pathBoxSpacingYoffset = 60,
     svgPathPushLeft = 150,
-    svgForceFooter = 100,
+    svgForceFooter = 0,
     labelMissingSkillOffset = 250,
     labelScoreOffset = 300;
 
@@ -317,19 +317,19 @@ function jobChanged(){
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 - 10)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "begin")
-          .text("Skill 1 : " + missing1);
+          .text("#1 " + missing1);
         otherG.append("text")
           .attr("x", svgWidthForce/2-labelMissingSkillOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 8)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "begin")
-          .text("Skill 2 : " + missing2);
+          .text("#2 " + missing2);
         otherG.append("text")
           .attr("x", svgWidthForce/2-labelMissingSkillOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 26)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "begin")
-          .text("Skill 3 : " + missing3);
+          .text("#3 " + missing3);
       }
       // // Connecting Arrows
       // if (pathwayIndex==1){
@@ -367,24 +367,24 @@ function jobChanged(){
     .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
     .attr("text-anchor", "middle")
     .text("Target Job");
-  svgCanvasPath.append("text")
-    .attr("x", 50)
-    .attr("y", svgHeightForce + pathBoxSpacingYoffset)
-    .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
-    .attr("text-anchor", "left")
-    .text("Difficulty is calculated using L1 Norm. A negative score implies that most skills are already met with the current job.");
-  svgCanvasPath.append("text")
-    .attr("x", 50)
-    .attr("y", svgHeightForce + pathBoxSpacingYoffset+20)
-    .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
-    .attr("text-anchor", "left")
-    .text("Similarity is calculated using Cosine Similarity.");
-  svgCanvasPath.append("text")
-    .attr("x", 50)
-    .attr("y", svgHeightForce + pathBoxSpacingYoffset+40)
-    .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
-    .attr("text-anchor", "left")
-    .text("Final score is the product of the two.");
+  // svgCanvasPath.append("text")
+  //   .attr("x", 50)
+  //   .attr("y", svgHeightForce + pathBoxSpacingYoffset)
+  //   .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
+  //   .attr("text-anchor", "left")
+  //   .text("Difficulty is calculated using L1 Norm. A negative score implies that most skills are already met with the current job.");
+  // svgCanvasPath.append("text")
+  //   .attr("x", 50)
+  //   .attr("y", svgHeightForce + pathBoxSpacingYoffset+20)
+  //   .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
+  //   .attr("text-anchor", "left")
+  //   .text("Similarity is calculated using Cosine Similarity.");
+  // svgCanvasPath.append("text")
+  //   .attr("x", 50)
+  //   .attr("y", svgHeightForce + pathBoxSpacingYoffset+40)
+  //   .attr("width", pathBoxWidth*2).attr("height", pathBoxHeight)
+  //   .attr("text-anchor", "left")
+  //   .text("Final score is the product of the two.");
   svgCanvasPath.attr("height", svgHeightForce + svgForceFooter);
 
   // Draw the radar

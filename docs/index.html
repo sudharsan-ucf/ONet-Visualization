@@ -48,6 +48,26 @@
           <h2 class="text-center">Skill Pathway</h2>
         </div>
       </div>
+      <div class="row">
+        <h3>Explanation of Scores</h3>
+        <ol>
+          <li>
+            Difficulty metric quantifies the skill-gap.
+            It is the sum of the non-negative difference in skill levels between the target job and the current job.
+            The total difference is normalized.
+            If the target job requires only a lower skill level than the current job, then the gap is assumed to be 0, (instead of a negative value).
+            A difficulty of 0 implies that the target job requires <b>no</b> additional skill.
+          </li>
+          <br>
+          <li>
+            Similarity is the "distance" between the current job and the target job.
+            Each job is treated as a 35-dimensional vector, where each dimension represents a skill and the weighted skill (skill importance x level) represents the magnitude along the skill's dimension.
+            The distance is calculated using <a href="https://en.wikipedia.org/wiki/Cosine_similarity">Cosine Similarity</a>.
+          </li>
+          <br>
+          <li>Final score is the product of the difficulty and the similarity.</li>
+        </ol>
+      </div>
     </div>
 
     <script src="js/libraries/jquery/jquery.min.js"></script>
