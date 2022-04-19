@@ -207,13 +207,15 @@ var jobCircleRadius = 40,
     skillCircleRadius = 20;
 var svgWidthForce,
     svgHeightForce = 100;
-var pathBoxWidth = 400,
-    pathBoxHeight = 50,
+var pathBoxWidth = 300,
+    pathBoxHeight = 75,
     pathTextHeight = 20,
-    pathBoxSpacingY = 60,
-    pathBoxSpacingYoffset = 30,
-    svgPathPushLeft = 100,
-    svgForceFooter = 100;
+    pathBoxSpacingY = 90,
+    pathBoxSpacingYoffset = 60,
+    svgPathPushLeft = 150,
+    svgForceFooter = 100,
+    labelMissingSkillOffset = 250,
+    labelScoreOffset = 300;
 
     
 // Creating the SVG canvas for force drawing
@@ -293,37 +295,37 @@ function jobChanged(){
         var missing1, missing2, missing3;
         [missing1, missing2, missing3] = calcMissingSkills(job1, jobID);
         otherG.append("text")
-          .attr("x", svgWidthForce/2+200)
+          .attr("x", svgWidthForce/2+labelScoreOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 - 10)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "end")
           .text("Difficulty : " + L1);
         otherG.append("text")
-          .attr("x", svgWidthForce/2+200)
+          .attr("x", svgWidthForce/2+labelScoreOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 8)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "end")
           .text("Similarity : " + L2);
         otherG.append("text")
-          .attr("x", svgWidthForce/2+200)
+          .attr("x", svgWidthForce/2+labelScoreOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 26)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "end")
           .text("Final Score : " + (L1*L2).toFixed(3));
         otherG.append("text")
-          .attr("x", svgWidthForce/2-150)
+          .attr("x", svgWidthForce/2-labelMissingSkillOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 - 10)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "begin")
           .text("Skill 1 : " + missing1);
         otherG.append("text")
-          .attr("x", svgWidthForce/2-150)
+          .attr("x", svgWidthForce/2-labelMissingSkillOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 8)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "begin")
           .text("Skill 2 : " + missing2);
         otherG.append("text")
-          .attr("x", svgWidthForce/2-150)
+          .attr("x", svgWidthForce/2-labelMissingSkillOffset)
           .attr("y", pathBoxSpacingYoffset+pathBoxSpacingY*(jobIndex)+pathBoxHeight/2 + 26)
           .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
           .attr("text-anchor", "begin")
@@ -341,6 +343,30 @@ function jobChanged(){
       // }
     });
   });
+  otherG.append("text")
+    .attr("x", svgWidthForce/2-labelMissingSkillOffset+pathBoxWidth/2)
+    .attr("y", pathBoxHeight/2)
+    .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+    .attr("text-anchor", "middle")
+    .text("Top 3 Missing Skills");
+  otherG.append("text")
+    .attr("x", svgWidthForce/2+labelScoreOffset-pathBoxWidth/4)
+    .attr("y", pathBoxHeight/2)
+    .attr("width", pathBoxWidth/2).attr("height", pathBoxHeight)
+    .attr("text-anchor", "middle")
+    .text("Scores");
+  otherG.append("text")
+    .attr("x", svgWidthForce*1/4-svgPathPushLeft)
+    .attr("y", pathBoxHeight/2)
+    .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+    .attr("text-anchor", "middle")
+    .text("Current Job");
+  otherG.append("text")
+    .attr("x", svgWidthForce*1/4+svgWidthForce/2-svgPathPushLeft+2*svgPathPushLeft)
+    .attr("y", pathBoxHeight/2)
+    .attr("width", pathBoxWidth).attr("height", pathBoxHeight)
+    .attr("text-anchor", "middle")
+    .text("Target Job");
   svgCanvasPath.append("text")
     .attr("x", 50)
     .attr("y", svgHeightForce + pathBoxSpacingYoffset)
